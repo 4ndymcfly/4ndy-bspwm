@@ -17,7 +17,7 @@ GRAY="\e[0;37m\033[1m"
 # Global variables
 dir=$(pwd)
 fdir="$HOME/.local/share/fonts"
-user=$(whoami)
+NORMAL_USER=$(getent passwd 1000 | cut -d: -f1)
 
 trap ctrl_c INT
 
@@ -40,16 +40,19 @@ function banner(){
     	echo -e "                                             /_/${NOCOLOR}"
 }
 
-if [ "$user" == "root" ]; then
-    banner
+if [ "$NORMAL_USER" == "root" ]; then
+    clear
+	banner
     echo -e "\n\n${RED}[!] You should not run the script as the root user!\n${NOCOLOR}"
     exit 1
 else
-    banner
-    sleep 1
+    clear
+	banner
+	echo -e "\n[+] Forked and extended by ${PURPLE}@4ndymcfly${NOCOLOR}\n [+] https://github.com/4ndymcfly/\n"
+	sleep 1
     echo -e "\n\n${BLUE}[*] Installing necessary packages for the environment...\n${NOCOLOR}"
     sleep 2
-    sudo apt install -y kitty rofi feh xclip ranger i3lock-fancy scrot scrub wmname imagemagick cmatrix htop neofetch python3-pip procps tty-clock fzf lsd bat pamixer flameshot pipx openjdk-24-jdk cupp jq qdirstat docker.io btop nuclei neovim ligolo-ng
+    sudo apt install -y kitty rofi feh xclip ranger i3lock-fancy scrot scrub wmname imagemagick cmatrix htop neofetch python3-pip procps tty-clock fzf bat pamixer flameshot pipx openjdk-24-jdk cupp jq qdirstat docker.io btop nuclei neovim ligolo-ng
     if [ $? != 0 ] && [ $? != 130 ]; then
         echo -e "\n${RED}[-] Failed to install some packages!\n${NOCOLOR}"
         exit 1
@@ -58,6 +61,18 @@ else
         sleep 1.5
     fi
     
+	# Install last version of LSD
+	FILE_URL="https://github.com/lsd-rs/lsd/releases/download/v1.1.5/lsd_1.1.5_amd64.deb"
+	FILE_NAME="lsd.deb"
+	wget "$FILE_URL" -O "$FILE_NAME"
+	sudo dpkg -i "$FILE_NAME"
+	if [ $? != 0 ]; then
+        echo -e "\n${RED}[-] Failed to install LSD!\n${NOCOLOR}"
+        exit 1
+    fi
+	sleep 1.5
+	rm -f "$FILE_NAME" 2>/dev/null
+
     # Install Go
     GO_VERSION="1.23.0"
     GO_TAR="go${GO_VERSION}.linux-amd64.tar.gz"
@@ -133,7 +148,7 @@ fi
 	git clone https://github.com/baskerville/bspwm.git
 	cd bspwm
 	make -j$(nproc)
-	sudo make install
+	sudo make install 
 	if [ $? != 0 ] && [ $? != 130 ]; then
 		echo -e "\n${RED}[-] Failed to install bspwm!\n${NOCOLOR}"
 		exit 1
@@ -149,7 +164,7 @@ fi
 	git clone https://github.com/baskerville/sxhkd.git
 	cd sxhkd
 	make -j$(nproc)
-	sudo make install
+	sudo make install > /dev/null 2>&1
 	if [ $? != 0 ] && [ $? != 130 ]; then
 		echo -e "\n${RED}[-] Failed to install sxhkd!\n${NOCOLOR}"
 		exit 1
@@ -168,7 +183,7 @@ fi
 	cd build
 	cmake ..
 	make -j$(nproc)
-	sudo make install
+	sudo make install > /dev/null 2>&1
 	if [ $? != 0 ] && [ $? != 130 ]; then
 		echo -e "\n${RED}[-] Failed to install polybar!\n${NOCOLOR}"
 		exit 1
@@ -186,7 +201,7 @@ fi
 	git submodule update --init --recursive
 	meson --buildtype=release . build
 	ninja -C build
-	sudo ninja -C build install
+	sudo ninja -C build install > /dev/null 2>&1
 	if [ $? != 0 ] && [ $? != 130 ]; then
 		echo -e "\n${RED}[-] Failed to install picom!\n${NOCOLOR}"
 		exit 1
@@ -197,12 +212,14 @@ fi
 
 	cd ..
 
-	echo -e "\n${PURPLE}[*] Installing Oh My Zsh and Powerlevel10k for user $user...\n${NOCOLOR}"
+	echo -e "\n${PURPLE}[*] Installing Oh My Zsh and Powerlevel10k for user $NORMAL_USER ...\n${NOCOLOR}"
 	sleep 2
-	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-	git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+	
+	sudo -u $NORMAL_USER sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+	sudo -u $NORMAL_USER git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-/home/$NORMAL_USER/.oh-my-zsh/custom}/themes/powerlevel10k
+	
 	if [ $? != 0 ] && [ $? != 130 ]; then
-		echo -e "\n${RED}[-] Failed to install Oh My Zsh and Powerlevel10k for user $user!\n${NOCOLOR}"
+		echo -e "\n${RED}[-] Failed to install Oh My Zsh and Powerlevel10k for user $NORMAL_USER!\n${NOCOLOR}"
 		exit 1
 	else
 		echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
@@ -211,8 +228,10 @@ fi
 
 	echo -e "\n${PURPLE}[*] Installing Oh My Zsh and Powerlevel10k for user root...\n${NOCOLOR}"
 	sleep 2
+	
 	sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 	sudo git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /root/.oh-my-zsh/custom/themes/powerlevel10k
+	
 	if [ $? != 0 ] && [ $? != 130 ]; then
 		echo -e "\n${RED}[-] Failed to install Oh My Zsh and Powerlevel10k for user root!\n${NOCOLOR}"
 		exit 1
@@ -221,36 +240,35 @@ fi
 		sleep 1.5
 	fi
 
-	echo -e "\n${BLUE}[*] Starting configuration of fonts, wallpaper, configuration files, .zshrc, .p10k.zsh, and scripts...\n${NOCOLOR}"
+	echo -e "\n${BLUE}[*] Starting configuration of fonts, wallpapers, configuration files, .zshrc, .p10k.zsh, and scripts...\n${NOCOLOR}"
 	sleep 0.5
 
 	echo -e "\n${PURPLE}[*] Configuring fonts...\n${NOCOLOR}"
 	sleep 2
 	if [[ -d "$fdir" ]]; then
-		cp -rv $dir/fonts/* $fdir
+		cp -rv $dir/fonts/* $fdir > /dev/null 2>&1
 	else
 		mkdir -p $fdir
-		cp -rv $dir/fonts/* $fdir
+		cp -rv $dir/fonts/* $fdir > /dev/null 2>&1
 	fi
 	echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
 	sleep 1.5
 
-	echo -e "\n${PURPLE}[*] Configuring wallpaper...\n${NOCOLOR}"
+	echo -e "\n${PURPLE}[*] Copying wallpapers...\n${NOCOLOR}"
 	sleep 2
 	if [[ -d "~/Wallpapers" ]]; then
-		cp -rv $dir/wallpapers/* ~/Wallpapers
+		cp -rv $dir/wallpapers/* ~/Wallpapers > /dev/null 2>&1
 	else
 		mkdir ~/Wallpapers
-		cp -rv $dir/wallpapers/* ~/Wallpapers
+		cp -rv $dir/wallpapers/* ~/Wallpapers > /dev/null 2>&1
 	fi
-	wal -nqi ~/Wallpapers/kevin.jpg
-	sudo wal -nqi ~/Wallpapers/kevin.jpg
+	
 	echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
 	sleep 1.5
 
 	echo -e "\n${PURPLE}[*] Configuring configuration files...\n${NOCOLOR}"
 	sleep 2
-	cp -rv $dir/config/* ~/.config/
+	cp -rv $dir/config/* ~/.config/ > /dev/null 2>&1
 	echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
 	sleep 1.5
 
@@ -283,7 +301,7 @@ fi
 	sudo touch /root/.config/polybar/shapes/scripts/target
 	sudo ln -sfv ~/.config/polybar/shapes/scripts/target /root/.config/polybar/shapes/scripts/target
 	sudo systemctl enable docker --now
-	sudo usermod -aG docker $USER
+	sudo usermod -aG docker $NORMAL_USER
 	cd ..
 	echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
 	sleep 1.5
@@ -294,13 +312,13 @@ fi
 	sleep 2
 
 	echo -e "\n${PURPLE}[*] Install Arsenal...\n${NOCOLOR}"
-	sudo -u $SUDO_USER pipx install arsenal-cli
+	sudo -u $NORMAL_USER pipx install arsenal-cli
 	echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
 	sleep 2
 
 	echo -e "\n${PURPLE}[*] Removing repository and tools directory...\n${NOCOLOR}"
 	sleep 2
-	rm -rfv ~/tools
+	rm -rfv ~/tools 2>/dev/null
 	rm -rfv $dir
 	echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
 	sleep 1.5
@@ -313,7 +331,7 @@ fi
 		read -r
 		REPLY=${REPLY:-"y"}
 		if [[ $REPLY =~ ^[Yy]$ ]]; then
-			echo -e "\n\n${GREEN}[+] Restarting the system...\n${endColor}"
+			echo -e "\n\n${GREEN}[+] Restarting the system...\n${NOCOLOR}"
 			sleep 1
 			sudo reboot
 		elif [[ $REPLY =~ ^[Nn]$ ]]; then
