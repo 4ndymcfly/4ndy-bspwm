@@ -150,7 +150,7 @@ ctrl + shift + m
 
 # ScreenShots
 @Print
-	flameshot full
+	flameshot full -p /home/$USER/Screenshots
 
 ctrl + @Print
 	flameshot gui

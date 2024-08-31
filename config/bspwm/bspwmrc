@@ -1,7 +1,6 @@
 #!/bin/sh
 
 pgrep -x sxhkd > /dev/null || sxhkd &
-
 wmname LG3D &
 vmware-user-suid-wrapper &
 
@@ -15,17 +14,28 @@ bspc config gapless_monocle true
 bspc config paddingless_monocle true
 bspc config focus_follows_pointer true
 bspc config pointer_modifier mod1
+bspc config pointer_action1 move
+#bspc config pointer_action2 resize_side
+bspc config pointer_action2 resize_corner
 bspc config normal_border_color '#1f1f1f'
 bspc config focused_border_color '#30302f'
 bspc config presel_feedback_color '#512da8'
 
 bspc rule -a Gimp desktop='^8' state=floating follow=on
-bspc rule -a Chromium desktop='^2'
+bspc rule -a Chromium desktop='^3'
 bspc rule -a mplayer2 state=floating
 bspc rule -a Kupfer.py focus=on
 bspc rule -a Screenkey manage=off
+bspc rule -a burp-StartBurp: state=floating center=true desktop='^9' follow=on
+bspc rule -a Wireshark: state=floating desktop='^8' follow=on
+bspc rule -a Thunar: state=pseudo tiled
+bspc rule -a VirtualBox: state=floating center=true
+bspc rule -a Google-chrome: state=tiled center=true follow=on desktop='^4'
+bspc rule -a firefox-esr: state=tiled center=true follow=on desktop='^3'
+bspc rule -a ghidra-Ghidra: state=floating center=true follow=on
 
-feh --bg-fill ~/Wallpapers/archkali.png &
+feh --bg-fill ~/Wallpapers/kevin.jpg &
 ~/.config/polybar/./launch.sh --shapes &
 picom --config ~/.config/picom/picom.conf &
 # wal -R
+xsetroot -cursor_name left_ptr
