@@ -238,32 +238,50 @@ fi
 
 cd ..
 
+retry_command() {
+    local retries=3
+    local count=0
+    until "$@"; do
+        exit_code=$?
+        count=$((count + 1))
+        if [ $count -lt $retries ]; then
+            sleep 2
+        else
+            echo -e "\n${RED}[-] Command failed after $retries attempts: $@\n${NOCOLOR}"
+            return $exit_code
+        fi
+    done
+    return 0
+}
+
+# Instalar Oh My Zsh y Powerlevel10k para el usuario normal
 echo -e "\n${PURPLE}[*] Installing Oh My Zsh and Powerlevel10k for user $NORMAL_USER ...\n${NOCOLOR}"
 sleep 2
 
-sudo -u $NORMAL_USER sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended > /dev/null 2>&1
-sudo -u $NORMAL_USER git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-/home/$NORMAL_USER/.oh-my-zsh/custom}/themes/powerlevel10k > /dev/null 2>&1
+retry_command sudo -u $NORMAL_USER sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended >> $LOGFILE 2>&1
+retry_command sudo -u $NORMAL_USER git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-/home/$NORMAL_USER/.oh-my-zsh/custom}/themes/powerlevel10k >> $LOGFILE 2>&1
 
-if [ $? != 0 ] && [ $? != 130 ]; then
-	echo -e "\n${RED}[-] Failed to install Oh My Zsh and Powerlevel10k for user $NORMAL_USER!\n${NOCOLOR}"
-	exit 1
+if [ $? != 0 ]; then
+    echo -e "\n${RED}[-] Failed to install Oh My Zsh and Powerlevel10k for user $NORMAL_USER!\n${NOCOLOR}"
+    exit 1
 else
-	echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
-	sleep 1.5
+    echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
+    sleep 1.5
 fi
 
+# Instalar Oh My Zsh y Powerlevel10k para root
 echo -e "\n${PURPLE}[*] Installing Oh My Zsh and Powerlevel10k for user root...\n${NOCOLOR}"
 sleep 2
 
-sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended > /dev/null 2>&1
-sudo git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /root/.oh-my-zsh/custom/themes/powerlevel10k > /dev/null 2>&1
+retry_command sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended >> $LOGFILE 2>&1
+retry_command sudo git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /root/.oh-my-zsh/custom/themes/powerlevel10k >> $LOGFILE 2>&1
 
-if [ $? != 0 ] && [ $? != 130 ]; then
-	echo -e "\n${RED}[-] Failed to install Oh My Zsh and Powerlevel10k for user root!\n${NOCOLOR}"
-	exit 1
+if [ $? != 0 ]; then
+    echo -e "\n${RED}[-] Failed to install Oh My Zsh and Powerlevel10k for root!\n${NOCOLOR}"
+    exit 1
 else
-	echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
-	sleep 1.5
+    echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
+    sleep 1.5
 fi
 
 echo -e "\n${BLUE}[*] Starting configuration of fonts, wallpapers, configuration files, .zshrc, .p10k.zsh, and scripts...\n${NOCOLOR}"
