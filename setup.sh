@@ -54,8 +54,10 @@ else
 	sudo -v
     
 	echo -e "\n\n${BLUE}[*] Installing necessary packages for the environment...\n${NOCOLOR}"
-    sleep 2
-    sudo apt install -y kitty rofi feh xclip ranger i3lock-fancy scrot scrub wmname imagemagick cmatrix htop neofetch python3-pip procps tty-clock fzf bat pamixer flameshot pipx openjdk-24-jdk cupp jq qdirstat docker.io btop nuclei neovim ligolo-ng > /dev/null 2>&1
+    sudo apt install progress > /dev/null 2>&1
+	sleep 1.5
+
+    sudo apt install -y kitty rofi feh xclip ranger i3lock-fancy scrot scrub wmname imagemagick cmatrix htop neofetch python3-pip procps tty-clock fzf bat pamixer flameshot pipx openjdk-24-jdk cupp jq qdirstat docker.io btop nuclei neovim ligolo-ng > /dev/null 2>&1 & progress -mp $!
     if [ $? != 0 ] && [ $? != 130 ]; then
         echo -e "\n${RED}[-] Failed to install some packages!\n${NOCOLOR}"
         exit 1
@@ -348,6 +350,8 @@ fi
 	sleep 2
 
 	echo -e "\n${PURPLE}[*] Install Arsenal...\n${NOCOLOR}"
+	export PATH='$PATH:/home/$NORMAL_USER/.local/bin'
+	sleep 1.5
 	sudo -u $NORMAL_USER pipx install arsenal-cli
 	echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
 	sleep 2
@@ -367,7 +371,7 @@ fi
 	sleep 1.5
 
 	while true; do
-		echo -en "\n${YELLOW}[?] It's necessary to restart the system. Do you want to restart the system now? ([y]/n) ${NOCOLOR}"
+		echo -en "\n${YELLOW}[?] It's necessary to restart the system. Do you want to restart the system now? ([Y]/n) ${NOCOLOR}"
 		read -r
 		REPLY=${REPLY:-"y"}
 		if [[ $REPLY =~ ^[Yy]$ ]]; then
