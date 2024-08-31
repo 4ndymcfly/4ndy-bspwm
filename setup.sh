@@ -50,7 +50,10 @@ else
 	banner
 	echo -e "\n[+] Forked and extended by ${PURPLE}@4ndymcfly${NOCOLOR}\n[+] https://github.com/4ndymcfly/\n"
 	sleep 1
-    echo -e "\n\n${BLUE}[*] Installing necessary packages for the environment...\n${NOCOLOR}"
+	
+	sudo -v
+    
+	echo -e "\n\n${BLUE}[*] Installing necessary packages for the environment...\n${NOCOLOR}"
     sleep 2
     sudo apt install -y kitty rofi feh xclip ranger i3lock-fancy scrot scrub wmname imagemagick cmatrix htop neofetch python3-pip procps tty-clock fzf bat pamixer flameshot pipx openjdk-24-jdk cupp jq qdirstat docker.io btop nuclei neovim ligolo-ng > /dev/null 2>&1
     if [ $? != 0 ] && [ $? != 130 ]; then
@@ -236,7 +239,7 @@ fi
 	echo -e "\n${PURPLE}[*] Installing Oh My Zsh and Powerlevel10k for user $NORMAL_USER ...\n${NOCOLOR}"
 	sleep 2
 
-	sudo -u $NORMAL_USER sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+	sudo -u $NORMAL_USER sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended > /dev/null 2>&1
 	sudo -u $NORMAL_USER git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-/home/$NORMAL_USER/.oh-my-zsh/custom}/themes/powerlevel10k > /dev/null 2>&1
 
 	if [ $? != 0 ] && [ $? != 130 ]; then
@@ -250,7 +253,7 @@ fi
 	echo -e "\n${PURPLE}[*] Installing Oh My Zsh and Powerlevel10k for user root...\n${NOCOLOR}"
 	sleep 2
 
-	sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+	sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended > /dev/null 2>&1
 	sudo git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /root/.oh-my-zsh/custom/themes/powerlevel10k > /dev/null 2>&1
 
 	if [ $? != 0 ] && [ $? != 130 ]; then
