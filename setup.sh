@@ -48,67 +48,70 @@ if [ "$NORMAL_USER" == "root" ]; then
 else
     clear
 	banner
-	echo -e "\n[+] Forked and extended by ${PURPLE}@4ndymcfly${NOCOLOR}\n [+] https://github.com/4ndymcfly/\n"
+	echo -e "\n[+] Forked and extended by ${PURPLE}@4ndymcfly${NOCOLOR}\n[+] https://github.com/4ndymcfly/\n"
 	sleep 1
     echo -e "\n\n${BLUE}[*] Installing necessary packages for the environment...\n${NOCOLOR}"
     sleep 2
-    sudo apt install -y kitty rofi feh xclip ranger i3lock-fancy scrot scrub wmname imagemagick cmatrix htop neofetch python3-pip procps tty-clock fzf bat pamixer flameshot pipx openjdk-24-jdk cupp jq qdirstat docker.io btop nuclei neovim ligolo-ng
+    sudo apt install -y kitty rofi feh xclip ranger i3lock-fancy scrot scrub wmname imagemagick cmatrix htop neofetch python3-pip procps tty-clock fzf bat pamixer flameshot pipx openjdk-24-jdk cupp jq qdirstat docker.io btop nuclei neovim ligolo-ng > /dev/null 2>&1
     if [ $? != 0 ] && [ $? != 130 ]; then
         echo -e "\n${RED}[-] Failed to install some packages!\n${NOCOLOR}"
         exit 1
-    else
-        echo -e "\n${GREEN}[+] Done with package installation\n${NOCOLOR}"
+    else     
         sleep 1.5
     fi
-    
+
 	# Install last version of LSD
 	FILE_URL="https://github.com/lsd-rs/lsd/releases/download/v1.1.5/lsd_1.1.5_amd64.deb"
 	FILE_NAME="lsd.deb"
-	wget "$FILE_URL" -O "$FILE_NAME"
-	sudo dpkg -i "$FILE_NAME"
+	wget "$FILE_URL" -O "$FILE_NAME" > /dev/null 2>&1
+	sudo dpkg -i "$FILE_NAME" > /dev/null 2>&1
 	if [ $? != 0 ]; then
         echo -e "\n${RED}[-] Failed to install LSD!\n${NOCOLOR}"
         exit 1
     fi
 	sleep 1.5
-	rm -f "$FILE_NAME" 2>/dev/null
+	rm -f "$FILE_NAME" > /dev/null 2>&1
 
     # Install Go
     GO_VERSION="1.23.0"
     GO_TAR="go${GO_VERSION}.linux-amd64.tar.gz"
     GO_URL="https://go.dev/dl/${GO_TAR}"
 
-    curl -LO $GO_URL
+    curl -LO $GO_URL > /dev/null 2>&1
     if [ $? != 0 ]; then
         echo -e "\n${RED}[-] Failed to download Go!\n${NOCOLOR}"
         exit 1
     fi
 
     # Remove any existing Go installation
-    sudo rm -rf /usr/local/go
+    sudo rm -rf /usr/local/go > /dev/null 2>&1
     sleep 1.5
 
     # Extract and copy Go binary
-    sudo tar -C /usr/local -xzf $GO_TAR
+    sudo tar -C /usr/local -xzf $GO_TAR > /dev/null 2>&1
     if [ $? != 0 ]; then
         echo -e "\n${RED}[-] Failed to extract Go!\n${NOCOLOR}"
         exit 1
     fi
 
     # Remove tar
-    rm -f $GO_TAR
+    rm -f $GO_TAR > /dev/null 2>&1
     if [ $? != 0 ]; then
         echo -e "\n${RED}[-] Failed to remove Go .tar!\n${NOCOLOR}"
         exit 1
     fi
 fi
  
+ 	echo -e "\n${GREEN}[+] Done with package installation\n${NOCOLOR}"
+ 	sleep 2
+
 	echo -e "\n${BLUE}[*] Starting installation of necessary dependencies for the environment...\n${NOCOLOR}"
 	sleep 0.5
 
 	echo -e "\n${PURPLE}[*] Installing necessary dependencies for bspwm...\n${NOCOLOR}"
 	sleep 2
-	sudo apt install -y build-essential git vim libxcb-util0-dev libxcb-ewmh-dev libxcb-randr0-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-xinerama0-dev libasound2-dev libxcb-xtest0-dev libxcb-shape0-dev libuv1-dev
+
+	sudo apt install -y build-essential git vim libxcb-util0-dev libxcb-ewmh-dev libxcb-randr0-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-xinerama0-dev libasound2-dev libxcb-xtest0-dev libxcb-shape0-dev libuv1-dev > /dev/null 2>&1
 	if [ $? != 0 ] && [ $? != 130 ]; then
 		echo -e "\n${RED}[-] Failed to install some dependencies for bspwm!\n${NOCOLOR}"
 		exit 1
@@ -119,7 +122,7 @@ fi
 
 	echo -e "\n${PURPLE}[*] Installing necessary dependencies for polybar...\n${NOCOLOR}"
 	sleep 2
-	sudo apt install -y cmake cmake-data pkg-config python3-sphinx libcairo2-dev libxcb1-dev libxcb-util0-dev libxcb-randr0-dev libxcb-composite0-dev python3-xcbgen xcb-proto libxcb-image0-dev libxcb-ewmh-dev libxcb-icccm4-dev libxcb-xkb-dev libxcb-xrm-dev libxcb-cursor-dev libasound2-dev libpulse-dev libjsoncpp-dev libmpdclient-dev libcurl4-openssl-dev libnl-genl-3-dev
+	sudo apt install -y cmake cmake-data pkg-config python3-sphinx libcairo2-dev libxcb1-dev libxcb-util0-dev libxcb-randr0-dev libxcb-composite0-dev python3-xcbgen xcb-proto libxcb-image0-dev libxcb-ewmh-dev libxcb-icccm4-dev libxcb-xkb-dev libxcb-xrm-dev libxcb-cursor-dev libasound2-dev libpulse-dev libjsoncpp-dev libmpdclient-dev libcurl4-openssl-dev libnl-genl-3-dev > /dev/null 2>&1
 	if [ $? != 0 ] && [ $? != 130 ]; then
 		echo -e "\n${RED}[-] Failed to install some dependencies for polybar!\n${NOCOLOR}"
 		exit 1
@@ -130,7 +133,7 @@ fi
 
 	echo -e "\n${PURPLE}[*] Installing necessary dependencies for picom...\n${NOCOLOR}"
 	sleep 2
-	sudo apt install -y meson libxext-dev libxcb1-dev libxcb-damage0-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-render-util0-dev libxcb-render0-dev libxcb-randr0-dev libxcb-composite0-dev libxcb-image0-dev libxcb-present-dev libxcb-xinerama0-dev libpixman-1-dev libdbus-1-dev libconfig-dev libgl1-mesa-dev libpcre2-dev libpcre3-dev libevdev-dev uthash-dev libev-dev libx11-xcb-dev libxcb-glx0-dev
+	sudo apt install -y meson libxext-dev libxcb1-dev libxcb-damage0-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-render-util0-dev libxcb-render0-dev libxcb-randr0-dev libxcb-composite0-dev libxcb-image0-dev libxcb-present-dev libxcb-xinerama0-dev libpixman-1-dev libdbus-1-dev libconfig-dev libgl1-mesa-dev libpcre2-dev libpcre3-dev libevdev-dev uthash-dev libev-dev libx11-xcb-dev libxcb-glx0-dev > /dev/null 2>&1
 	if [ $? != 0 ] && [ $? != 130 ]; then
 		echo -e "\n${RED}[-] Failed to install some dependencies for picom!\n${NOCOLOR}"
 		exit 1
@@ -141,30 +144,40 @@ fi
 
 	echo -e "\n${BLUE}[*] Starting installation of the tools...\n${NOCOLOR}"
 	sleep 0.5
-	mkdir ~/tools && cd ~/tools
+	
+	mkdir ~/tools && cd ~/tools > /dev/null 2>&1
 
 	echo -e "\n${PURPLE}[*] Installing bspwm...\n${NOCOLOR}"
 	sleep 2
+	
+	{
 	git clone https://github.com/baskerville/bspwm.git
 	cd bspwm
 	make -j$(nproc)
-	sudo make install 
+	sudo make install
+	} > /dev/null 2>&1
+
 	if [ $? != 0 ] && [ $? != 130 ]; then
 		echo -e "\n${RED}[-] Failed to install bspwm!\n${NOCOLOR}"
 		exit 1
 	else
-		sudo apt install bspwm -y
+		sudo apt install bspwm -y > /dev/null 2>&1
 		echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
 		sleep 1.5
 	fi
+	
 	cd ..
 
 	echo -e "\n${PURPLE}[*] Installing sxhkd...\n${NOCOLOR}"
 	sleep 2
+	
+	{
 	git clone https://github.com/baskerville/sxhkd.git
 	cd sxhkd
 	make -j$(nproc)
-	sudo make install > /dev/null 2>&1
+	sudo make install
+	} > /dev/null 2>&1
+
 	if [ $? != 0 ] && [ $? != 130 ]; then
 		echo -e "\n${RED}[-] Failed to install sxhkd!\n${NOCOLOR}"
 		exit 1
@@ -177,13 +190,17 @@ fi
 
 	echo -e "\n${PURPLE}[*] Installing polybar...\n${NOCOLOR}"
 	sleep 2
+
+	{
 	git clone --recursive https://github.com/polybar/polybar
 	cd polybar
 	mkdir build
 	cd build
 	cmake ..
 	make -j$(nproc)
-	sudo make install > /dev/null 2>&1
+	sudo make install
+	} > /dev/null 2>&1
+	
 	if [ $? != 0 ] && [ $? != 130 ]; then
 		echo -e "\n${RED}[-] Failed to install polybar!\n${NOCOLOR}"
 		exit 1
@@ -196,12 +213,16 @@ fi
 
 	echo -e "\n${PURPLE}[*] Installing picom...\n${NOCOLOR}"
 	sleep 2
+
+	{
 	git clone https://github.com/ibhagwan/picom.git
 	cd picom
 	git submodule update --init --recursive
 	meson --buildtype=release . build
 	ninja -C build
-	sudo ninja -C build install > /dev/null 2>&1
+	sudo ninja -C build install
+	} > /dev/null 2>&1
+
 	if [ $? != 0 ] && [ $? != 130 ]; then
 		echo -e "\n${RED}[-] Failed to install picom!\n${NOCOLOR}"
 		exit 1
@@ -214,10 +235,10 @@ fi
 
 	echo -e "\n${PURPLE}[*] Installing Oh My Zsh and Powerlevel10k for user $NORMAL_USER ...\n${NOCOLOR}"
 	sleep 2
-	
+
 	sudo -u $NORMAL_USER sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-	sudo -u $NORMAL_USER git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-/home/$NORMAL_USER/.oh-my-zsh/custom}/themes/powerlevel10k
-	
+	sudo -u $NORMAL_USER git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-/home/$NORMAL_USER/.oh-my-zsh/custom}/themes/powerlevel10k > /dev/null 2>&1
+
 	if [ $? != 0 ] && [ $? != 130 ]; then
 		echo -e "\n${RED}[-] Failed to install Oh My Zsh and Powerlevel10k for user $NORMAL_USER!\n${NOCOLOR}"
 		exit 1
@@ -228,10 +249,10 @@ fi
 
 	echo -e "\n${PURPLE}[*] Installing Oh My Zsh and Powerlevel10k for user root...\n${NOCOLOR}"
 	sleep 2
-	
+
 	sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-	sudo git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /root/.oh-my-zsh/custom/themes/powerlevel10k
-	
+	sudo git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /root/.oh-my-zsh/custom/themes/powerlevel10k > /dev/null 2>&1
+
 	if [ $? != 0 ] && [ $? != 130 ]; then
 		echo -e "\n${RED}[-] Failed to install Oh My Zsh and Powerlevel10k for user root!\n${NOCOLOR}"
 		exit 1
@@ -259,10 +280,10 @@ fi
 	if [[ -d "~/Wallpapers" ]]; then
 		cp -rv $dir/wallpapers/* ~/Wallpapers > /dev/null 2>&1
 	else
-		mkdir ~/Wallpapers
+		mkdir ~/Wallpapers > /dev/null 2>&1
 		cp -rv $dir/wallpapers/* ~/Wallpapers > /dev/null 2>&1
 	fi
-	
+
 	echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
 	sleep 1.5
 
@@ -274,23 +295,33 @@ fi
 
 	echo -e "\n${PURPLE}[*] Configuring the .zshrc and .p10k.zsh files...\n${NOCOLOR}"
 	sleep 2
+
+	{
 	cp -v $dir/.zshrc ~/.zshrc
 	sudo ln -sfv ~/.zshrc /root/.zshrc
 	cp -v $dir/.p10k.zsh ~/.p10k.zsh
 	sudo ln -sfv ~/.p10k.zsh /root/.p10k.zsh
+	} > /dev/null 2>&1
+
 	echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
 	sleep 1.5
 
 	echo -e "\n${PURPLE}[*] Configuring scripts...\n${NOCOLOR}"
 	sleep 2
+
+	{
 	sudo cp -v $dir/scripts/whichSystem.py /usr/local/bin/
 	cp -rv $dir/scripts/*.sh ~/.config/polybar/shapes/scripts/
 	touch ~/.config/polybar/shapes/scripts/target
+	} > /dev/null 2>&1
+
 	echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
 	sleep 1.5
 
 	echo -e "\n${PURPLE}[*] Configuring necessary permissions and symbolic links...\n${NOCOLOR}"
 	sleep 2
+	
+	{
 	chmod -R +x ~/.config/bspwm/
 	chmod +x ~/.config/polybar/launch.sh
 	chmod +x ~/.config/polybar/shapes/scripts/*
@@ -303,6 +334,8 @@ fi
 	sudo systemctl enable docker --now
 	sudo usermod -aG docker $NORMAL_USER
 	cd ..
+	} > /dev/null 2>&1
+
 	echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
 	sleep 1.5
 
@@ -318,8 +351,12 @@ fi
 
 	echo -e "\n${PURPLE}[*] Removing repository and tools directory...\n${NOCOLOR}"
 	sleep 2
-	rm -rfv ~/tools 2>/dev/null
+	
+	{
+	rm -rfv ~/tools
 	rm -rfv $dir
+	} > /dev/null 2>&1
+	
 	echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
 	sleep 1.5
 
