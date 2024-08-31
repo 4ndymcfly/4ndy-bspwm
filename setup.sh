@@ -370,7 +370,6 @@ echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
 sleep 2
 
 echo -e "\n${PURPLE}[*] Install Arsenal...\n${NOCOLOR}"
-export PATH='$PATH:/home/$NORMAL_USER/.local/bin'
 sleep 1.5
 sudo -u $NORMAL_USER pipx install arsenal-cli
 echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
