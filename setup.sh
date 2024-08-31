@@ -258,8 +258,8 @@ retry_command() {
 echo -e "\n${PURPLE}[*] Installing Oh My Zsh and Powerlevel10k for user $NORMAL_USER ...\n${NOCOLOR}"
 sleep 2
 
-retry_command sudo -u $NORMAL_USER sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended >> $LOGFILE 2>&1
-retry_command sudo -u $NORMAL_USER git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-/home/$NORMAL_USER/.oh-my-zsh/custom}/themes/powerlevel10k >> $LOGFILE 2>&1
+retry_command sudo -u $NORMAL_USER sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended > /dev/null 2>&1
+retry_command sudo -u $NORMAL_USER git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-/home/$NORMAL_USER/.oh-my-zsh/custom}/themes/powerlevel10k
 
 if [ $? != 0 ]; then
     echo -e "\n${RED}[-] Failed to install Oh My Zsh and Powerlevel10k for user $NORMAL_USER!\n${NOCOLOR}"
@@ -273,8 +273,8 @@ fi
 echo -e "\n${PURPLE}[*] Installing Oh My Zsh and Powerlevel10k for user root...\n${NOCOLOR}"
 sleep 2
 
-retry_command sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended >> $LOGFILE 2>&1
-retry_command sudo git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /root/.oh-my-zsh/custom/themes/powerlevel10k >> $LOGFILE 2>&1
+retry_command sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended > /dev/null 2>&1
+retry_command sudo git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /root/.oh-my-zsh/custom/themes/powerlevel10k
 
 if [ $? != 0 ]; then
     echo -e "\n${RED}[-] Failed to install Oh My Zsh and Powerlevel10k for root!\n${NOCOLOR}"
