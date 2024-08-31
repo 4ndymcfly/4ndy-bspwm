@@ -259,6 +259,7 @@ echo -e "\n${PURPLE}[*] Installing Oh My Zsh and Powerlevel10k for user $NORMAL_
 sleep 2
 
 retry_command sudo -u $NORMAL_USER sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended > /dev/null 2>&1
+sleep 1
 retry_command sudo -u $NORMAL_USER git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-/home/$NORMAL_USER/.oh-my-zsh/custom}/themes/powerlevel10k
 
 if [ $? != 0 ]; then
@@ -274,6 +275,7 @@ echo -e "\n${PURPLE}[*] Installing Oh My Zsh and Powerlevel10k for user root...\
 sleep 2
 
 retry_command sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended > /dev/null 2>&1
+sleep 1
 retry_command sudo git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /root/.oh-my-zsh/custom/themes/powerlevel10k
 
 if [ $? != 0 ]; then
