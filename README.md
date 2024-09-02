@@ -134,7 +134,7 @@ In addition, this configuration includes the following software:
 
 ## New walpapers
 <p align="center">
-  <img src="wallpapers/abstract.jpg" width="200" />
+  <img src="wallpapers/archkali.png" width="200" />
   <img src="wallpapers/alena-aenami-7p-m.jpg" width="200" />
   <img src="wallpapers/alena-aenami-cloud-sunset.jpg" width="200" />
   <img src="wallpapers/alena-aenami-cold.jpg" width="200" />
@@ -156,16 +156,13 @@ In addition, this configuration includes the following software:
 </p><p align="center">
   <img src="wallpapers/galaxy.jpg" width="200" />
   <img src="wallpapers/kevin.jpg" width="200" />
-  <img src="wallpapers/luca-micheli-ruWkmt3nU58-unsplash.jpg" width="200" />
+   <img src="wallpapers/catppuccin-leaves.png" width="200" />
   <img src="wallpapers/mario-lofi.jpg" width="200" />
 </p><p align="center">
   <img src="wallpapers/the-book-of-unwritten-tales-the-critter-chronicles.jpg" width="200" />
   <img src="wallpapers/zhang-kaiyv-SpH8TP-AyFA-unsplash.jpg" width="200" />
   <img src="wallpapers/lofi-bath.jpeg" width="200" />
   <img src="wallpapers/lofi.jpeg" width="200" />
-</p><p align="center">
-  <img src="wallpapers/archkali.png" width="200" />
-  <img src="wallpapers/catppuccin-leaves.png" width="200" />
 
 ## Credits
 - Special thanks to [r1vs3c](https://github.com/r1vs3c/auto-bspwm) for creating and sharing this script.
