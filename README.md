@@ -131,7 +131,7 @@ In addition, this configuration includes the following software:
 ## Alias and functions
 A wide range of aliases and functions have been added to streamline your workflow. Refer to the `.zshrc` file for more details.
 
-## Walpapers
+## New walpapers
 <p align="center">
   <img src="wallpapers/abstract.jpg" width="200" />
   <img src="wallpapers/alena-aenami-7p-m.jpg" width="200" />
