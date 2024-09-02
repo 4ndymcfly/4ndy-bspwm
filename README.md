@@ -129,7 +129,7 @@ In addition, this configuration includes the following software:
 - **Tunneling tool**: [ligolo-ng](https://github.com/nicocha30/ligolo-ng) (chisel and socat alternative)   
 
 ## Alias and functions
-A wide range of aliases and functions have been added to streamline your workflow. Refer to the .zshrc file for more details.
+A wide range of aliases and functions have been added to streamline your workflow. Refer to the `.zshrc` file for more details.
 
 ## Walpapers
 <p align="center">
