@@ -26,18 +26,18 @@ function ctrl_c(){
 	exit 1
 }
 
-function banner(){
-	echo -e "\n${TURQUOISE}              _____            ______"
-	sleep 0.05
-	echo -e "______ ____  ___  /______      ___  /___________________      ________ ___"
-	sleep 0.05
-	echo -e "_  __ \`/  / / /  __/  __ \     __  __ \_  ___/__  __ \_ | /| / /_  __ \`__ \\"
-	sleep 0.05
-	echo -e "/ /_/ // /_/ // /_ / /_/ /     _  /_/ /(__  )__  /_/ /_ |/ |/ /_  / / / / /"
-	sleep 0.05
-	echo -e "\__,_/ \__,_/ \__/ \____/      /_.___//____/ _  .___/____/|__/ /_/ /_/ /_/    ${NOCOLOR}${YELLOW}(${NOCOLOR}${GRAY}By ${NOCOLOR}${PURPLE}@r1vs3c${NOCOLOR}${YELLOW})${NOCOLOR}${TURQUOISE}"
-	sleep 0.05
-    	echo -e "                                             /_/${NOCOLOR}"
+function banner() {
+    echo -e "\n${TURQUOISE}_____ __      _________            ______                                      "
+    sleep 0.05
+    echo -e "__  // /____________  /____  __    ___  /___________________      ________ ___ "
+    sleep 0.05
+    echo -e "_  // /__  __ \\  __  /__  / / /    __  __ \\_  ___/__  __ \\_ | /| / /_  __ \`__ \\"
+    sleep 0.05
+    echo -e "/__  __/  / / / /_/ / _  /_/ /     _  /_/ /(__  )__  /_/ /_ |/ |/ /_  / / / / /"
+    sleep 0.05
+    echo -e "  /_/  /_/ /_/\\__,_/  _\\__, /      /_.___//____/ _  .___/____/|__/ /_/ /_/ /_/    ${NOCOLOR}${YELLOW}(${NOCOLOR}${GRAY}By ${NOCOLOR}${PURPLE}@4ndymcfly${NOCOLOR}${YELLOW})${NOCOLOR}${TURQUOISE}"
+    sleep 0.05
+    echo -e "                      /____/                     /_/${NOCOLOR}                 "
 }
 
 if [ "$NORMAL_USER" == "root" ]; then
@@ -48,7 +48,7 @@ if [ "$NORMAL_USER" == "root" ]; then
 else
     clear
 	banner
-	echo -e "\n[+] Forked and extended by ${PURPLE}@4ndymcfly${NOCOLOR}\n[+] https://github.com/4ndymcfly/\n"
+	echo -e "\n[+] Forked from ${PURPLE}@r1vs3c${NOCOLOR}\n[+] https://github.com/r1vs3c/auto-bspwm/\n"
 	sleep 1
 	
 	sudo -v
