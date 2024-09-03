@@ -18,7 +18,6 @@ GRAY="\e[0;37m\033[1m"
 dir=$(pwd)
 fdir="$HOME/.local/share/fonts"
 NORMAL_USER=$(getent passwd 1000 | cut -d: -f1)
-KEYMAPS_LUA_SRC="$user/config/lazyvim/keymaps.lua"
 KEYMAPS_LUA_DEST="/home/$NORMAL_USER/.config/nvim/lua/config/keymaps.lua"
 
 trap ctrl_c INT
@@ -198,15 +197,7 @@ cd ..
 echo -e "\n${PURPLE}[*] Installing polybar...\n${NOCOLOR}"
 sleep 2
 
-{
-	git clone --recursive https://github.com/polybar/polybar
-	cd polybar
-	mkdir build
-	cd build
-	cmake ..
-	make -j$(nproc)
-	sudo make install
-} > /dev/null 2>&1
+sudo apt install polybar > /dev/null 2>&1
 
 if [ $? != 0 ] && [ $? != 130 ]; then
 	echo -e "\n${RED}[-] Failed to install polybar!\n${NOCOLOR}"
@@ -215,8 +206,6 @@ else
 	echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
 	sleep 1.5
 fi
-
-cd ../../
 
 echo -e "\n${PURPLE}[*] Installing picom...\n${NOCOLOR}"
 sleep 2
@@ -297,7 +286,7 @@ sleep 1
 	mv /home/$NORMAL_USER/.local/state/nvim{,.bak}
 	mv /home/$NORMAL_USER/.cache/nvim{,.bak}
 	sleep 1
-	git clone https://github.com/LazyVim/starter ~/.config/nvim > /dev/null 2>&1
+	git clone https://github.com/LazyVim/starter /home/$NORMAL_USER/.config/nvim > /dev/null 2>&1
     	sleep 1
     	rm -rf /home/$NORMAL_USER/.config/nvim/.git > /dev/null 2>&1
 } > /dev/null 2>&1
@@ -334,12 +323,17 @@ else
 fi
 
 echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
-sleep 1.5
+sleep 1
 
 echo -e "\n${PURPLE}[*] Configuring configuration files...\n${NOCOLOR}"
-sleep 2
-cp -rv $dir/config/* ~/.config/ > /dev/null 2>&1
-cp "$KEYMAPS_LUA_SRC" "$KEYMAPS_LUA_DEST" 2>&1
+sleep 1
+
+{
+	cp -rv $dir/config/* ~/.config/
+	cp $dir/config/polybar/keymaps.lua "$KEYMAPS_LUA_DEST"
+	rm -rf /home/$NORMAL_USER/.config/lazyvim/
+} > /dev/null 2>&1
+
 echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
 sleep 1.5
 
