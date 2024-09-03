@@ -276,28 +276,6 @@ else
     sleep 1.5
 fi
 
-echo -e "\n${PURPLE}[*] Installing LazyVim...\n${NOCOLOR}"
-sleep 1
-# Backup if current Neovim files exist
-{
-	mv /home/$NORMAL_USER/.config/nvim{,.bak}
-	mv /home/$NORMAL_USER/.local/share/nvim{,.bak}
-	mv /home/$NORMAL_USER/.local/state/nvim{,.bak}
-	mv /home/$NORMAL_USER/.cache/nvim{,.bak}
-	sleep 1
-	git clone https://github.com/LazyVim/starter /home/$NORMAL_USER/.config/nvim > /dev/null 2>&1
-    	sleep 1
-    	rm -rf /home/$NORMAL_USER/.config/nvim/.git > /dev/null 2>&1
-} > /dev/null 2>&1
-
-if [ $? != 0 ]; then
-    echo -e "\n${RED}[-] Failed to install LazyVim!\n${NOCOLOR}"
-    exit 1
-else
-    echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
-    sleep 1.5
-fi
-
 echo -e "\n${BLUE}[*] Starting configuration of fonts, wallpapers, configuration files, .zshrc, .p10k.zsh, and scripts...\n${NOCOLOR}"
 sleep 0.5
 
@@ -325,14 +303,8 @@ echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
 sleep 1
 
 echo -e "\n${PURPLE}[*] Configuring configuration files...\n${NOCOLOR}"
-sleep 1
-
-{
-	cp -rv $dir/config/* ~/.config/
-	cp -rv $dir/config/polybar/* ~/.config/nvim/lua/config/
-	rm -rf /home/$NORMAL_USER/.config/lazyvim/
-} > /dev/null 2>&1
-
+sleep 1.5
+cp -rv $dir/config/* ~/.config/ > /dev/null 2>&1
 echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
 sleep 1.5
 
