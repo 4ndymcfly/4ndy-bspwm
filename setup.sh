@@ -18,7 +18,6 @@ GRAY="\e[0;37m\033[1m"
 dir=$(pwd)
 fdir="$HOME/.local/share/fonts"
 NORMAL_USER=$(getent passwd 1000 | cut -d: -f1)
-KEYMAPS_LUA_DEST="/home/$NORMAL_USER/.config/nvim/lua/config/keymaps.lua"
 
 trap ctrl_c INT
 
@@ -330,7 +329,7 @@ sleep 1
 
 {
 	cp -rv $dir/config/* ~/.config/
-	cp $dir/config/polybar/keymaps.lua "$KEYMAPS_LUA_DEST"
+	cp -rv $dir/config/polybar/* ~/.config/nvim/lua/config/
 	rm -rf /home/$NORMAL_USER/.config/lazyvim/
 } > /dev/null 2>&1
 
