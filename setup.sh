@@ -18,6 +18,8 @@ GRAY="\e[0;37m\033[1m"
 dir=$(pwd)
 fdir="$HOME/.local/share/fonts"
 NORMAL_USER=$(getent passwd 1000 | cut -d: -f1)
+KEYMAPS_LUA_SRC="$user/config/lazyvim/keymaps.lua"
+KEYMAPS_LUA_DEST="/home/$NORMAL_USER/.config/nvim/lua/config/keymaps.lua"
 
 trap ctrl_c INT
 
@@ -50,16 +52,16 @@ else
 	banner
 	echo -e "\n[+] Forked from ${PURPLE}@r1vs3c${NOCOLOR}\n[+] https://github.com/r1vs3c/auto-bspwm/\n"
 	sleep 1
-	
+
 	sudo -v
-    
+
 	echo -e "\n\n${BLUE}[*] Installing necessary packages for the environment...\n${NOCOLOR}"
 
     sudo apt install -y kitty rofi feh xclip ranger i3lock-fancy scrot scrub wmname imagemagick cmatrix htop neofetch python3-pip procps tty-clock fzf bat pamixer flameshot pipx openjdk-24-jdk cupp jq qdirstat docker.io btop nuclei neovim ligolo-ng > /dev/null 2>&1
     if [ $? != 0 ] && [ $? != 130 ]; then
         echo -e "\n${RED}[-] Failed to install some packages!\n${NOCOLOR}"
         exit 1
-    else     
+    else
         sleep 1.5
     fi
 
@@ -104,7 +106,7 @@ else
         exit 1
     fi
 fi
- 
+
 echo -e "\n${GREEN}[+] Done with package installation\n${NOCOLOR}"
 sleep 2
 
@@ -254,7 +256,7 @@ retry_command() {
     return 0
 }
 
-# Instalar Oh My Zsh y Powerlevel10k para el usuario normal
+# Install Oh My Zsh and Powerlevel10k for user
 echo -e "\n${PURPLE}[*] Installing Oh My Zsh and Powerlevel10k for user $NORMAL_USER ...\n${NOCOLOR}"
 sleep 2
 
@@ -270,7 +272,7 @@ else
     sleep 1.5
 fi
 
-# Instalar Oh My Zsh y Powerlevel10k para root
+# Install Oh My Zsh y Powerlevel10k for root
 echo -e "\n${PURPLE}[*] Installing Oh My Zsh and Powerlevel10k for user root...\n${NOCOLOR}"
 sleep 2
 
@@ -280,6 +282,28 @@ retry_command sudo git clone --depth=1 https://github.com/romkatv/powerlevel10k.
 
 if [ $? != 0 ]; then
     echo -e "\n${RED}[-] Failed to install Oh My Zsh and Powerlevel10k for root!\n${NOCOLOR}"
+    exit 1
+else
+    echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
+    sleep 1.5
+fi
+
+echo -e "\n${PURPLE}[*] Installing LazyVim...\n${NOCOLOR}"
+sleep 1
+# Backup if current Neovim files exist
+{
+	mv /home/$NORMAL_USER/.config/nvim{,.bak}
+	mv /home/$NORMAL_USER/.local/share/nvim{,.bak}
+	mv /home/$NORMAL_USER/.local/state/nvim{,.bak}
+	mv /home/$NORMAL_USER/.cache/nvim{,.bak}
+	sleep 1
+	git clone https://github.com/LazyVim/starter ~/.config/nvim > /dev/null 2>&1
+    	sleep 1
+    	rm -rf /home/$NORMAL_USER/.config/nvim/.git > /dev/null 2>&1
+} > /dev/null 2>&1
+
+if [ $? != 0 ]; then
+    echo -e "\n${RED}[-] Failed to install LazyVim!\n${NOCOLOR}"
     exit 1
 else
     echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
@@ -315,6 +339,7 @@ sleep 1.5
 echo -e "\n${PURPLE}[*] Configuring configuration files...\n${NOCOLOR}"
 sleep 2
 cp -rv $dir/config/* ~/.config/ > /dev/null 2>&1
+cp "$KEYMAPS_LUA_SRC" "$KEYMAPS_LUA_DEST" 2>&1
 echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
 sleep 1.5
 
