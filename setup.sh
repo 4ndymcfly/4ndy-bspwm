@@ -53,9 +53,12 @@ else
 
 	sudo -v
 
-	echo -e "\n\n${BLUE}[*] Installing necessary packages for the environment...\n${NOCOLOR}"
+	echo -e "\n\n${BLUE}[*] Installing necessary packages for the environment, wait...\n${NOCOLOR}"
 
-    sudo apt install -y kitty rofi feh xclip ranger i3lock-fancy scrot scrub wmname imagemagick cmatrix htop neofetch python3-pip procps tty-clock fzf bat pamixer flameshot pipx openjdk-24-jdk cupp jq qdirstat docker.io btop nuclei neovim ligolo-ng > /dev/null 2>&1
+    sudo apt install -y kitty rofi feh xclip ranger i3lock-fancy scrot scrub wmname imagemagick cmatrix htop neofetch python3-pip procps \
+                        tty-clock fzf bat pamixer flameshot pipx openjdk-24-jdk cupp jq qdirstat docker.io btop nuclei neovim ligolo-ng \
+                        gobuster dirsearch seclists html2text lynx > /dev/null 2>&1
+
     if [ $? != 0 ] && [ $? != 130 ]; then
         echo -e "\n${RED}[-] Failed to install some packages!\n${NOCOLOR}"
         exit 1
@@ -114,7 +117,9 @@ sleep 0.5
 echo -e "\n${PURPLE}[*] Installing necessary dependencies for bspwm...\n${NOCOLOR}"
 sleep 2
 
-sudo apt install -y build-essential git vim libxcb-util0-dev libxcb-ewmh-dev libxcb-randr0-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-xinerama0-dev libasound2-dev libxcb-xtest0-dev libxcb-shape0-dev libuv1-dev > /dev/null 2>&1
+sudo apt install -y build-essential git vim libxcb-util0-dev libxcb-ewmh-dev libxcb-randr0-dev libxcb-icccm4-dev libxcb-keysyms1-dev \
+                    libxcb-xinerama0-dev libasound2-dev libxcb-xtest0-dev libxcb-shape0-dev libuv1-dev > /dev/null 2>&1
+
 if [ $? != 0 ] && [ $? != 130 ]; then
 	echo -e "\n${RED}[-] Failed to install some dependencies for bspwm!\n${NOCOLOR}"
 	exit 1
@@ -126,7 +131,10 @@ fi
 echo -e "\n${PURPLE}[*] Installing necessary dependencies for polybar...\n${NOCOLOR}"
 sleep 2
 
-sudo apt install -y cmake cmake-data pkg-config python3-sphinx libcairo2-dev libxcb1-dev libxcb-util0-dev libxcb-randr0-dev libxcb-composite0-dev python3-xcbgen xcb-proto libxcb-image0-dev libxcb-ewmh-dev libxcb-icccm4-dev libxcb-xkb-dev libxcb-xrm-dev libxcb-cursor-dev libasound2-dev libpulse-dev libjsoncpp-dev libmpdclient-dev libcurl4-openssl-dev libnl-genl-3-dev > /dev/null 2>&1
+sudo apt install -y cmake cmake-data pkg-config python3-sphinx libcairo2-dev libxcb1-dev libxcb-util0-dev libxcb-randr0-dev libxcb-composite0-dev \
+                    python3-xcbgen xcb-proto libxcb-image0-dev libxcb-ewmh-dev libxcb-icccm4-dev libxcb-xkb-dev libxcb-xrm-dev libxcb-cursor-dev \
+                    libasound2-dev libpulse-dev libjsoncpp-dev libmpdclient-dev libcurl4-openssl-dev libnl-genl-3-dev > /dev/null 2>&1
+
 if [ $? != 0 ] && [ $? != 130 ]; then
 	echo -e "\n${RED}[-] Failed to install some dependencies for polybar!\n${NOCOLOR}"
 	exit 1
@@ -138,7 +146,10 @@ fi
 echo -e "\n${PURPLE}[*] Installing necessary dependencies for picom...\n${NOCOLOR}"
 sleep 2
 
-sudo apt install -y meson libxext-dev libxcb1-dev libxcb-damage0-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-render-util0-dev libxcb-render0-dev libxcb-randr0-dev libxcb-composite0-dev libxcb-image0-dev libxcb-present-dev libxcb-xinerama0-dev libpixman-1-dev libdbus-1-dev libconfig-dev libgl1-mesa-dev libpcre2-dev libpcre3-dev libevdev-dev uthash-dev libev-dev libx11-xcb-dev libxcb-glx0-dev > /dev/null 2>&1
+sudo apt install -y meson libxext-dev libxcb1-dev libxcb-damage0-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-render-util0-dev libxcb-render0-dev \
+                    libxcb-randr0-dev libxcb-composite0-dev libxcb-image0-dev libxcb-present-dev libxcb-xinerama0-dev libpixman-1-dev libdbus-1-dev \
+                    libconfig-dev libgl1-mesa-dev libpcre2-dev libpcre3-dev libevdev-dev uthash-dev libev-dev libx11-xcb-dev libxcb-glx0-dev > /dev/null 2>&1
+
 if [ $? != 0 ] && [ $? != 130 ]; then
 	echo -e "\n${RED}[-] Failed to install some dependencies for picom!\n${NOCOLOR}"
 	exit 1
