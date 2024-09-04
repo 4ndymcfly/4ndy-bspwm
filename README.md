@@ -117,16 +117,18 @@ This configuration uses the following software:
 ## Software added
 In addition, this configuration includes the following software:
 - **The next gen ls command**: [lsd (LSDeluxe)](https://github.com/lsd-rs/lsd) (Updated version that resolves visual issues)
+- **Collection of multiple lists: [seclists](https://github.com/danielmiessler/SecLists)
 - **Container application**: [Docker](https://www.docker.com/)
 - **hyperextensible Vim-based text editor**: [Neovim](https://github.com/neovim/neovim)
 - **Isolated Package Manager**: [pipx](https://github.com/pypa/pipx)
-- **Java Development Kit**: [openjdk-24-jdk](https://openjdk.org/projects/jdk/24/spec/)
 - **Common User Passwords Profiler**: [cupp](https://github.com/Mebus/cupp)
 - **JSON Processor**: [jq](https://github.com/jqlang/jq)
-- **Qt-based directory statistics**: [qdirstat](https://github.com/shundhammer/qdirstat)
 - **Resource monitor**: [btop](https://github.com/aristocratos/btop)
 - **Vulnerability Scanner**: [nuclei](https://github.com/projectdiscovery/nuclei)
-- **Tunneling tool**: [ligolo-ng](https://github.com/nicocha30/ligolo-ng) (chisel and socat alternative)   
+- **Tunneling tool**: [ligolo-ng](https://github.com/nicocha30/ligolo-ng) (chisel and socat alternative)
+- **Fuzzing tool**: [gobuster](https://github.com/OJ/gobuster)
+- **Web path scanner**: [dirsearch](https://github.com/maurosoria/dirsearch)
+- **And more ...**
 
 ## Alias and functions
 > [!TIP]
