@@ -117,7 +117,7 @@ This configuration uses the following software:
 ## Software added
 In addition, this configuration includes the following software:
 - **The next gen ls command**: [lsd (LSDeluxe)](https://github.com/lsd-rs/lsd) (Updated version that resolves visual issues)
-- **Collection of multiple lists: [seclists](https://github.com/danielmiessler/SecLists)
+- **Collection of multiple lists**: [seclists](https://github.com/danielmiessler/SecLists)
 - **Container application**: [Docker](https://www.docker.com/)
 - **hyperextensible Vim-based text editor**: [Neovim](https://github.com/neovim/neovim)
 - **Isolated Package Manager**: [pipx](https://github.com/pypa/pipx)
