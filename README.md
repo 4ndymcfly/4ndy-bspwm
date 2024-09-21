@@ -152,7 +152,7 @@ In addition, this configuration includes the following software:
   <img src="wallpapers/anime-japan-girl-sword.jpg" width="200" />
 </p><p align="center">
   <img src="wallpapers/backiee-122168-landscape.jpg" width="200" />
-  <img src="wallpapers/block-wave-moon.jpg" width="200" />
+  <img src="wallpapers/projectsombra.jpg" width="200" />
   <img src="wallpapers/clouds-night.jpg" width="200" />
   <img src="wallpapers/dark-sky.jpg" width="200" />
 </p><p align="center">
