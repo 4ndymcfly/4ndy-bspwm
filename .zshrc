@@ -325,11 +325,12 @@ function scanNmap () {
         echo -e "\t${blueColor}[*] Found $num_ports Ports:\t ${grayColor}$open_ports${endColor}\n\n"
         echo $open_ports | tr -d '\n' | xclip -sel clip
         echo -e "${blueColor}[i] Scanning founded ports...${endColor}"
-        sudo nmap -sCV -p $open_ports $1 --stylesheet=https://raw.githubusercontent.com/honze-net/nmap-bootstrap-xsl/stable/nmap-bootstrap.xsl -oN targeted -oX targetedXML > /dev/null
+        sudo nmap -sCV -p $open_ports $1 --stylesheet=https://raw.githubusercontent.com/honze-net/nmap-bootstrap-xsl/stable/nmap-bootstrap.xsl -oN targeted -oX targeted.xml > /dev/null
         /usr/bin/batcat --paging=never -l perl ./targeted
 
+	# Enable this lines for see the report with Firefox y XML format. 
         #php -S 0.0.0.0:80 &
-        #/usr/bin/firefox-esr "http://127.0.0.1/targetedXML" & disown
+        #/usr/bin/firefox-esr "http://127.0.0.1/targeted.xml" & disown
 }
 
 function extractUDPPorts(){
