@@ -1,12 +1,12 @@
 # Shell Ouput Colors
-greenColor="\e[0;32m\033[1m"
-endColor="\033[0m\e[0m"
-redColor="\e[0;31m\033[1m"
-blueColor="\e[0;34m\033[1m"
-yellowColor="\e[0;33m\033[1m"
-purpleColor="\e[0;35m\033[1m"
-turquoiseColor="\e[0;36m\033[1m"
-grayColor="\e[0;37m\033[1m"
+NOCOLOR="\033[0m\e[0m"
+GREEN="\e[0;32m\033[1m"
+RED="\e[0;31m\033[1m"
+BLUE="\e[0;34m\033[1m"
+YELLOW="\e[0;33m\033[1m"
+PURPLE="\e[0;35m\033[1m"
+TURQUOISE="\e[0;36m\033[1m"
+GRAY="\e[0;37m\033[1m"
 
 # Import colorscheme from 'wal' asynchronously
 # &   # Run the process in the background.
@@ -48,16 +48,9 @@ export WPSCAN=""
 # Other Variables
 export ROCKYOU=/usr/share/wordlists/rockyou.txt
 
-# Set name of the theme to load --- if set to "random", it will
-# load a random theme each time oh-my-zsh is loaded, in which case,
-# to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
-# Set list of themes to pick from when loading at random
-# Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in $ZSH/themes/
-# If set to an empty array, this variable will have no effect.
 # ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
 
 # Uncomment the following line to use case-sensitive completion.
@@ -88,14 +81,10 @@ DISABLE_MAGIC_FUNCTIONS="true"
 # ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
-# You can also set it to another string to have that shown instead of the default red dots.
 # e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
-# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
 # COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
 # DISABLE_UNTRACKED_FILES_DIRTY="true"
 
 # Uncomment the following line if you want to change the command execution time
@@ -112,8 +101,6 @@ DISABLE_MAGIC_FUNCTIONS="true"
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
 plugins=(sudo fzf command-not-found colored-man-pages)
 
 source $ZSH/oh-my-zsh.sh
@@ -136,15 +123,6 @@ source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
-
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
@@ -180,7 +158,7 @@ zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 
 # History configurations
 HISTFILE=~/.zsh_history
-HISTSIZE=1000
+HISTSIZE=2000
 SAVEHIST=2000
 
 # Manual aliases
@@ -198,7 +176,7 @@ alias ping='/usr/bin/ping -c 3'
 alias pping='/usr/bin/ping'
 alias proceso='xprop WM_CLASS'
 alias rustscan='sudo docker run -it --rm --name rustscan rustscan/rustscan:latest'
-alias se='searchsploit'
+alias se=searchsploit
 alias vdir='vdir --color=auto'
 alias kittyupdate='curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin'
 alias vi="nvim"
@@ -206,7 +184,7 @@ alias wSystem="~/.config/scripts/wSystem.py"
 alias nessus="sudo systemctl start nessusd.service && firefox https://127.0.0.1:8834 2>/dev/null & disown"
 alias a="sudo sysctl -w dev.tty.legacy_tiocsti=1 && arsenal"
 alias rs-win-encode="python3 /home/$USER/Tools/Scripts/Windows/rs-win-encode.py"
-alias smbshare='sudo impacket-smbserver smb $(pwd) -smb2support -username usersmb -password "Pass123###"'
+alias smbshare='sudo impacket-smbserver smb $(pwd) -smb2support -username smbuser -password "Pass123Word@"'
 alias cme="crackmapexec"
 alias xmlparse="xsltproc"
 alias keepass="kpcli"
@@ -233,9 +211,11 @@ alias enableipv6='sudo sysctl -w net.ipv6.conf.all.disable_ipv6=0'
 alias disableipv6='sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1'
 alias pc='proxychains'
 
-# Functions
+# FUNCTIONS
+
+# Function mkt
 function mkt(){
-	mkdir {nmap,content,exploits,scripts}
+	mkdir {nmap,content,exploits}
 }
 
 # Extract nmap information
@@ -266,21 +246,21 @@ function fzf-lovely(){
 
 	if [ "$1" = "h" ]; then
 		fzf -m --reverse --preview-window down:20 --preview '[[ $(file --mime {}) =~ binary ]] &&
- 	                echo {} is a binary file ||
-	                 (batcat --style=numbers --color=always {} ||
-	                  highlight -O ansi -l {} ||
-	                  coderay {} ||
-	                  rougify {} ||
-	                  cat {}) 2> /dev/null | head -500'
+ 	               echo {} is a binary file ||
+	                (batcat --style=numbers --color=always {} ||
+	                 highlight -O ansi -l {} ||
+	                 coderay {} ||
+	                 rougify {} ||
+	                 cat {}) 2> /dev/null | head -500'
 
 	else
-	        fzf -m --preview '[[ $(file --mime {}) =~ binary ]] &&
-	                         echo {} is a binary file ||
-	                         (batcat --style=numbers --color=always {} ||
-	                          highlight -O ansi -l {} ||
-	                          coderay {} ||
-	                          rougify {} ||
-	                          cat {}) 2> /dev/null | head -500'
+	       fzf -m --preview '[[ $(file --mime {}) =~ binary ]] &&
+	                        echo {} is a binary file ||
+	                        (batcat --style=numbers --color=always {} ||
+	                         highlight -O ansi -l {} ||
+	                         coderay {} ||
+	                         rougify {} ||
+	                         cat {}) 2> /dev/null | head -500'
 	fi
 }
 
@@ -298,39 +278,47 @@ function scanPorts () {
 
 function scanNmap () {
 
-        TTL=$(sudo ping -c 1 $1 | grep ttl | awk '{print $6}' | cut -d "=" -f2)  > /dev/null
+    # Get TTL without displaying ping output
+    TTL=$(sudo ping -c 1 $1 2>/dev/null | grep ttl | awk '{print $6}' | cut -d "=" -f2)
 
-        echo -e "\n${blueColor}[i] Scanning ports...${endColor}"
-        sudo nmap -sS -p- --open --min-rate 5000 -n -Pn $1 -oG allPorts > /dev/null
+    echo -e "\n${BLUE}[i] Starting port scan...${NOCOLOR}"
+    sudo nmap -sS -p- --open --min-rate 5000 -n -Pn $1 -oG allPorts > /dev/null
 
-        allPortsContent=$(cat ./allPorts)
-        ip_address=$(echo "$allPortsContent" | grep -oP '^Host: .* \(\)' | head -n 1 | awk '{print $2}')
-        open_ports=$(echo "$allPortsContent" | grep -oP '\d{1,5}/open' | awk '{print $1}' FS="/" | xargs | tr ' ' ',')
-        num_ports=$(echo $open_ports | tr ',' '\n' | wc -l)
+    allPortsContent=$(cat ./allPorts)
+    ip_address=$(echo "$allPortsContent" | grep -oP '^Host: .* \(\)' | head -n 1 | awk '{print $2}')
+    open_ports=$(echo "$allPortsContent" | grep -oP '\d{1,5}/open' | awk '{print $1}' FS="/" | xargs | tr ' ' ',')
+    num_ports=$(echo $open_ports | tr ',' '\n' | wc -l)
 
-        echo -e "\n"
-        echo -e "\t${blueColor}[*] IP:\t\t\t ${grayColor}$ip_address${endColor}\n"
-        if [ $TTL -ge 120 ] && [ $TTL -le 130 ]
-        then
-                echo -e "\t${blueColor}[*] SO:\t\t\t ${grayColor}Windows${endColor}\n"
-        elif [ $TTL -ge 60 ] && [ $TTL -le 70 ]
-        then
-                echo -e "\t${blueColor}[*] SO:\t\t\t ${grayColor}Linux${endColor}\n"
-        elif [ $TTL -ge 250 ] && [ $TTL -le 254 ]
-        then
-                echo -e "\t${blueColor}[*] SO:\t\t\t ${grayColor}FreeBSD - Others${endColor}\n"
+    echo -e "\n"
+    echo -e "\t${BLUE}[*] IP:\t\t\t ${GRAY}$ip_address${NOCOLOR}\n"
+
+    # Validate if TTL has a value
+    if [ -n "$TTL" ]; then
+        # Determine the operating system based on TTL
+        if [ $TTL -ge 120 ] && [ $TTL -le 130 ]; then
+            echo -e "\t${BLUE}[*] OS:\t\t\t ${GRAY}Windows${NOCOLOR}\n"
+        elif [ $TTL -ge 60 ] && [ $TTL -le 70 ]; then
+            echo -e "\t${BLUE}[*] OS:\t\t\t ${GRAY}Linux${NOCOLOR}\n"
+        elif [ $TTL -ge 250 ] && [ $TTL -le 254 ]; then
+            echo -e "\t${BLUE}[*] OS:\t\t\t ${GRAY}FreeBSD - Others${NOCOLOR}\n"
         else
-                echo "\t${blueColor}[!]${endColor} OS unknow.\n"
+            echo -e "\t${BLUE}[!]${NOCOLOR} Could not determine the operating system.\n"
         fi
-        echo -e "\t${blueColor}[*] Found $num_ports Ports:\t ${grayColor}$open_ports${endColor}\n\n"
+    else
+        echo -e "\t${BLUE}[!]${NOCOLOR} Could not obtain TTL or no response from the host.\n"
+    fi
+
+    echo -e "\t${BLUE}[*] Found $num_ports Ports:\t ${GRAY}$open_ports${NOCOLOR}\n\n"
+
+    # Copy open ports to clipboard only if there are open ports
+    if [ -n "$open_ports" ]; then
         echo $open_ports | tr -d '\n' | xclip -sel clip
-        echo -e "${blueColor}[i] Scanning founded ports...${endColor}"
+        echo -e "${BLUE}[i] Starting comprehensive scan on the found ports...${NOCOLOR}"
         sudo nmap -sCV -p $open_ports $1 --stylesheet=https://raw.githubusercontent.com/honze-net/nmap-bootstrap-xsl/stable/nmap-bootstrap.xsl -oN targeted -oX targeted.xml > /dev/null
         /usr/bin/batcat --paging=never -l perl ./targeted
-
-	# Enable this lines for see the report with Firefox y XML format. 
-        #php -S 0.0.0.0:80 &
-        #/usr/bin/firefox-esr "http://127.0.0.1/targeted.xml" & disown
+    else
+        echo -e "${RED}[!] No open ports found.${NOCOLOR}"
+    fi
 }
 
 function extractUDPPorts(){
@@ -344,49 +332,111 @@ function extractUDPPorts(){
     cat extractPorts.tmp; rm extractPorts.tmp
 }
 
-# Function to delete TIME_WAIT state connections
+# Functions to encode/decode URL strings
+function urlencode() {
+    if [ -z "$1" ]; then
+        echo "Error: You must provide a string to URL encode"
+        echo "Usage: urlencode <string_to_encode>"
+        return 1
+    fi
+
+    # Execute the Python command for URL encoding
+    encoded_str=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$1'))")
+
+    # Copy to clipboard using xclip
+    echo -n "$encoded_str" | xclip -selection clipboard
+
+    # Inform the user that the result was copied
+    echo
+    echo "$encoded_str"
+    echo
+    echo "The encoded string has been copied to the clipboard."
+}
+
+function urldecode() {
+    if [ -z "$1" ]; then
+        echo "Error: You must provide a string to URL decode"
+        echo "Usage: urldecode <string_to_decode>"
+        return 1
+    fi
+
+    # Execute the Python command for URL decoding
+    decoded_str=$(python3 -c "import urllib.parse; print(urllib.parse.unquote('$1'))")
+
+    # Copy to clipboard using xclip
+    echo -n "$decoded_str" | xclip -selection clipboard
+
+    # Inform the user that the result was copied
+    echo
+    echo "$decoded_str"
+    echo
+    echo "The decoded string has been copied to the clipboard."
+}
+
+# Function to remove connections in TIME_WAIT state
 function deltimewait() {
-        for pid in $(netstat -anp | awk '$6 == "TIME_WAIT" {print $7}' | cut -d"/" -f1); do
-                echo "Deleting connection with state TIME_WAIT with pid $pid"
+    # Check if the user has superuser privileges
+    if [ "$(id -u)" -ne 0 ]; then
+        echo
+        echo "[+] This script requires superuser privileges."
+        echo "[+] Switch to root using 'sudo su' and re-run the script (it does NOT work with 'sudo')."
+        return 1
+    fi
+
+    # Use 'ss' instead of 'netstat' if available
+    if command -v ss &>/dev/null; then
+        netstat_cmd="ss -tulnp"
+    else
+        netstat_cmd="netstat -anp"
+    fi
+
+    # Iterate through processes in TIME_WAIT state and terminate corresponding processes
+    for pid in $(eval $netstat_cmd | awk '$6 == "TIME-WAIT" {print $7}' | cut -d"/" -f1); do
+        if [ -n "$pid" ]; then
+            echo "Terminating connection in TIME_WAIT state with pid $pid"
+
+            # Attempt with SIGTERM first, then force with SIGKILL if necessary
+            kill -15 $pid 2>/dev/null
+            if [ $? -ne 0 ]; then
+                echo "Could not terminate the process with pid $pid, forcing with SIGKILL"
                 kill -9 $pid
-        done
+            fi
+        fi
+    done
 }
 
-# Function to show external IP address
+# Function to get my external IP address
 function ipext() {
-  echo "Your external IP address is: $(curl -s -4 icanhazip.com)"
+  local ip=$(curl -s -4 icanhazip.com)
+  echo "Your external IP address is: $ip"
 }
 
-# Funtion to geolocalize an IP. Example "geoip 142.250.178.164"
+# Function to get geolocation of my IP or any IP passed as an argument
 function geoip() {
+  local ip_address
+
+  # If no argument is passed, use the external IP
   if [ $# -eq 0 ]; then
-    local ip_address=$(curl -s icanhazip.com)
-    curl -s ip-api.com/json/$ip_address | jq -r '
-      "\tIP: \(.query)
-      \tCountry: \(.country)
-      \tRegion: \(.regionName)
-      \tCity: \(.city)
-      \tZip: \(.zip)
-      \tLatitude: \(.lat)
-      \tLongitude: \(.lon)
-      \tTimezone: \(.timezone)
-      \tISP: \(.isp)
-      \tAS: \(.as)
-      \tOrg: \(.org)"
-    '
+    ip_address=$(curl -s -4 icanhazip.com)
   else
-    curl -s ip-api.com/json/$1 | jq -r '
-      "\tIP: \(.query)
-      \tCountry: \(.country)
-      \tRegion: \(.regionName)
-      \tCity: \(.city)
-      \tZip: \(.zip)
-      \tLatitude: \(.lat)
-      \tLongitude: \(.lon)
-      \tTimezone: \(.timezone)
-      \tISP: \(.isp)
-      \tAS: \(.as)
-      \tOrg: \(.org)"
-    '
+    ip_address=$1
   fi
+
+  # Fetch geolocation data and format output
+  curl -s "http://ip-api.com/json/$ip_address" | jq -r '
+    "\tIP: \(.query)
+    \tCountry: \(.country)
+    \tRegion: \(.regionName)
+    \tCity: \(.city)
+    \tZip: \(.zip)
+    \tLatitude: \(.lat)
+    \tLongitude: \(.lon)
+    \tTimezone: \(.timezone)
+    \tISP: \(.isp)
+    \tAS: \(.as)
+    \tOrganization: \(.org)"
+  '
 }
+
+# Expresion to delete duplicate paths
+export PATH=$(echo "$PATH" | tr ':' '\n' | awk '!seen[$0]++' | tr '\n' ':' | sed 's/:$//')
