@@ -1,14 +1,4 @@
-```
-
-_____ __      _________            ______                                      
-__  // /____________  /____  __    ___  /___________________      ________ ___ 
-_  // /__  __ \  __  /__  / / /    __  __ \_  ___/__  __ \_ | /| / /_  __ `__ \
-/__  __/  / / / /_/ / _  /_/ /     _  /_/ /(__  )__  /_/ /_ |/ |/ /_  / / / / /
-  /_/  /_/ /_/\__,_/  _\__, /      /_.___//____/ _  .___/____/|__/ /_/ /_/ /_/ 
-                        /____/                     /_/
-                                                                by: 4ndymcfly                           
-
-```
+# Andy-Bspwm
 
 > [!NOTE]
 > This is a Bash script that automates the setup of a professional hacking environment for Kali Linux using the tiled window manager [bspwm](https://github.com/baskerville/bspwm) and is forked from [r1v3sc](https://github.com/r1vs3c/auto-bspwm) repository.
@@ -133,6 +123,11 @@ In addition, this configuration includes the following software:
 ## Alias and functions
 > [!TIP]
 > A wide range of aliases and functions have been added to streamline your workflow. Refer to the `.zshrc` file for more details.
+
+<br>
+
+> [!TIP]
+> Clicking on any of the IPs in Polybar (VPN, Target Machine, LAN) will automatically copy it to memory, allowing you to paste it anytime in the console or application.
 
 ## New walpapers
 <p align="center">
