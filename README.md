@@ -45,6 +45,8 @@ cd 4ndy-bspwm
 </p>
 
 ## Keyboard shortcuts (added some shortcuts)
+<details>
+  <summary>Expand shortcuts section. ⬇</summary>
 
 - <kbd>Windows</kbd> + <kbd>Enter</kbd>: Open a terminal emulator window (kitty).
 - <kbd>Windows</kbd> + <kbd>W</kbd>: Close the current window.
@@ -66,7 +68,7 @@ cd 4ndy-bspwm
 - <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>⬆⬇</kbd>: Increase/decrease volume.
 - <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>M</kbd>: Mute/unmute volume.
 - <kbd>Windows</kbd> + <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>(⬆⬅⬇➡)</kbd>: Show a preselection and then open a window (kitty, Firefox, File manager, etc.). 
-   - <kbd>Windows</kbd> + <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Space</kbd>: Undo the preselection.
+- <kbd>Windows</kbd> + <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Space</kbd>: Undo the preselection.
 - <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Enter</kbd>: Open a sub-window in the current window.
 - <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd>: Zoom in on the current sub-window.
 - <kbd>Ctrl</kbd> + <kbd>(⬆⬅⬇➡)</kbd>: Navigate between sub-windows in the current window.
@@ -84,6 +86,9 @@ cd 4ndy-bspwm
 - <kbd>F2</kbd>: Paste from buffer A.
 - <kbd>F3</kbd>: Copy to buffer B.
 - <kbd>F4</kbd>: Paste from buffer B.
+</details>
+
+<br>
 
 ## Software
 This configuration uses the following software:
