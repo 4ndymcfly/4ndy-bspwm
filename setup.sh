@@ -55,8 +55,8 @@ else
 
 	echo -e "\n\n${BLUE}[*] Installing necessary packages for the environment, wait...\n${NOCOLOR}"
 
-    sudo apt install -y kitty rofi feh xclip ranger i3lock-fancy scrot scrub wmname imagemagick cmatrix htop neofetch python3-pip procps \
-                        tty-clock fzf bat pamixer flameshot pipx openjdk-24-jdk cupp jq qdirstat docker.io btop nuclei neovim ligolo-ng \
+    sudo apt install -y kitty rofi feh xclip ranger i3lock-fancy scrot scrub wmname imagemagick cmatrix htop python3-pip procps \
+                        tty-clock fzf bat pamixer flameshot pipx openjdk-21-jdk cupp jq qdirstat docker.io btop nuclei neovim ligolo-ng \
                         gobuster dirsearch seclists html2text lynx moreutils > /dev/null 2>&1
 
     if [ $? != 0 ] && [ $? != 130 ]; then
