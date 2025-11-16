@@ -5,10 +5,6 @@ import re, sys, subprocess
 
 # python3 wichSystem.py 10.10.10.188
 
-if len(sys.argv) != 2:
-    print("\n[!] Uso: python3 " + sys.argv[0] + " <direccion-ip>\n")
-    sys.exit(1)
-
 def get_ttl(ip_address):
     try:
         # FIX: Use list of arguments instead of shell=True to prevent command injection
@@ -52,6 +48,10 @@ def get_os(ttl):
         return "Not Found"
 
 if __name__ == '__main__':
+    # Validate command line arguments
+    if len(sys.argv) != 2:
+        print("\n[!] Uso: python3 " + sys.argv[0] + " <direccion-ip>\n")
+        sys.exit(1)
 
     ip_address = sys.argv[1]
 
