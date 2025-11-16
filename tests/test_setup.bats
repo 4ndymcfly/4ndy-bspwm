@@ -288,7 +288,7 @@ teardown() {
 @test "Has error checking after git clone commands" {
     grep -A 5 "git clone.*bspwm" "$SETUP_FILE" | grep -q "exit_code"
     grep -A 5 "git clone.*sxhkd" "$SETUP_FILE" | grep -q "exit_code"
-    grep -A 5 "git clone.*picom" "$SETUP_FILE" | grep -q "exit_code"
+    grep -A 7 "git clone.*picom" "$SETUP_FILE" | grep -q "exit_code"
 }
 
 @test "Exits on critical failures" {

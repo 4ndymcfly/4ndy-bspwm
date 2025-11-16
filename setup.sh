@@ -56,9 +56,9 @@ else
 	echo -e "\n\n${BLUE}[*] Installing necessary packages for the environment, wait...\n${NOCOLOR}"
 
     # FIX: Add missing dependencies for zsh plugins and net-tools
-    sudo apt install -y kitty rofi feh xclip ranger i3lock-fancy scrot scrub wmname imagemagick cmatrix htop python3-pip procps \
-                        tty-clock fzf bat pamixer flameshot pipx openjdk-21-jdk cupp jq qdirstat docker.io btop nuclei neovim ligolo-ng \
-                        gobuster dirsearch seclists html2text lynx moreutils zsh-syntax-highlighting zsh-autosuggestions net-tools > /dev/null 2>&1
+    sudo apt install -y zsh-syntax-highlighting zsh-autosuggestions net-tools kitty rofi feh xclip ranger i3lock-fancy scrot scrub \
+                        wmname imagemagick cmatrix htop python3-pip procps tty-clock fzf bat pamixer flameshot pipx openjdk-21-jdk \
+                        cupp jq qdirstat docker.io btop nuclei neovim ligolo-ng gobuster dirsearch seclists html2text lynx moreutils > /dev/null 2>&1
 
     # FIX: Store exit code in variable before checking (checking $? twice doesn't work as expected)
     exit_code=$?
@@ -178,8 +178,6 @@ sleep 2
 	make -j$(nproc)
 	sudo make install
 } > /dev/null 2>&1
-
-# FIX: Store exit code in variable
 exit_code=$?
 if [ $exit_code != 0 ] && [ $exit_code != 130 ]; then
 	echo -e "\n${RED}[-] Failed to install bspwm!\n${NOCOLOR}"
@@ -201,8 +199,6 @@ sleep 2
 	make -j$(nproc)
 	sudo make install
 } > /dev/null 2>&1
-
-# FIX: Store exit code in variable
 exit_code=$?
 if [ $exit_code != 0 ] && [ $exit_code != 130 ]; then
 	echo -e "\n${RED}[-] Failed to install sxhkd!\n${NOCOLOR}"
@@ -240,8 +236,6 @@ sleep 2
 	ninja -C build
 	sudo ninja -C build install
 } > /dev/null 2>&1
-
-# FIX: Store exit code in variable
 exit_code=$?
 if [ $exit_code != 0 ] && [ $exit_code != 130 ]; then
 	echo -e "\n${RED}[-] Failed to install picom!\n${NOCOLOR}"
@@ -396,7 +390,7 @@ sleep 2
 
 {
 	rm -rfv ~/tools
-	rm -rfv $dir
+	rm -rfv "${dir}"
 } > /dev/null 2>&1
 
 echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
