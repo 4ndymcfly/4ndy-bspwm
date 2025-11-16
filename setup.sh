@@ -55,19 +55,23 @@ else
 
 	echo -e "\n\n${BLUE}[*] Installing necessary packages for the environment, wait...\n${NOCOLOR}"
 
+    # FIX: Add missing dependencies for zsh plugins and net-tools
     sudo apt install -y kitty rofi feh xclip ranger i3lock-fancy scrot scrub wmname imagemagick cmatrix htop python3-pip procps \
                         tty-clock fzf bat pamixer flameshot pipx openjdk-21-jdk cupp jq qdirstat docker.io btop nuclei neovim ligolo-ng \
-                        gobuster dirsearch seclists html2text lynx moreutils > /dev/null 2>&1
+                        gobuster dirsearch seclists html2text lynx moreutils zsh-syntax-highlighting zsh-autosuggestions net-tools > /dev/null 2>&1
 
-    if [ $? != 0 ] && [ $? != 130 ]; then
+    # FIX: Store exit code in variable before checking (checking $? twice doesn't work as expected)
+    exit_code=$?
+    if [ $exit_code != 0 ] && [ $exit_code != 130 ]; then
         echo -e "\n${RED}[-] Failed to install some packages!\n${NOCOLOR}"
         exit 1
     else
         sleep 1.5
     fi
 
-	# Install last version of LSD
-	FILE_URL="https://github.com/lsd-rs/lsd/releases/download/v1.1.5/lsd_1.1.5_amd64.deb"
+	# FIX: Update to latest version of LSD
+	LSD_VERSION="1.2.0"
+	FILE_URL="https://github.com/lsd-rs/lsd/releases/download/v${LSD_VERSION}/lsd_${LSD_VERSION}_amd64.deb"
 	FILE_NAME="lsd.deb"
 	wget "$FILE_URL" -O "$FILE_NAME" > /dev/null 2>&1
 	sudo dpkg -i "$FILE_NAME" > /dev/null 2>&1
@@ -78,8 +82,8 @@ else
 	sleep 1.5
 	rm -f "$FILE_NAME" > /dev/null 2>&1
 
-    # Install Go
-    GO_VERSION="1.23.0"
+    # FIX: Update to latest version of Go
+    GO_VERSION="1.23.5"
     GO_TAR="go${GO_VERSION}.linux-amd64.tar.gz"
     GO_URL="https://go.dev/dl/${GO_TAR}"
 
@@ -100,12 +104,8 @@ else
         exit 1
     fi
 
-    # Remove tar
-    rm -f $GO_TAR > /dev/null 2>&1
-    if [ $? != 0 ]; then
-        echo -e "\n${RED}[-] Failed to remove Go .tar!\n${NOCOLOR}"
-        exit 1
-    fi
+    # FIX: Remove tar (rm -f always succeeds, no need to check exit code)
+    rm -f "$GO_TAR" > /dev/null 2>&1
 fi
 
 echo -e "\n${GREEN}[+] Done with package installation\n${NOCOLOR}"
@@ -120,7 +120,9 @@ sleep 2
 sudo apt install -y build-essential git vim libxcb-util0-dev libxcb-ewmh-dev libxcb-randr0-dev libxcb-icccm4-dev libxcb-keysyms1-dev \
                     libxcb-xinerama0-dev libasound2-dev libxcb-xtest0-dev libxcb-shape0-dev libuv1-dev > /dev/null 2>&1
 
-if [ $? != 0 ] && [ $? != 130 ]; then
+# FIX: Store exit code in variable
+exit_code=$?
+if [ $exit_code != 0 ] && [ $exit_code != 130 ]; then
 	echo -e "\n${RED}[-] Failed to install some dependencies for bspwm!\n${NOCOLOR}"
 	exit 1
 else
@@ -135,7 +137,9 @@ sudo apt install -y cmake cmake-data pkg-config python3-sphinx libcairo2-dev lib
                     python3-xcbgen xcb-proto libxcb-image0-dev libxcb-ewmh-dev libxcb-icccm4-dev libxcb-xkb-dev libxcb-xrm-dev libxcb-cursor-dev \
                     libasound2-dev libpulse-dev libjsoncpp-dev libmpdclient-dev libcurl4-openssl-dev libnl-genl-3-dev > /dev/null 2>&1
 
-if [ $? != 0 ] && [ $? != 130 ]; then
+# FIX: Store exit code in variable
+exit_code=$?
+if [ $exit_code != 0 ] && [ $exit_code != 130 ]; then
 	echo -e "\n${RED}[-] Failed to install some dependencies for polybar!\n${NOCOLOR}"
 	exit 1
 else
@@ -150,7 +154,9 @@ sudo apt install -y meson libxext-dev libxcb1-dev libxcb-damage0-dev libxcb-xfix
                     libxcb-randr0-dev libxcb-composite0-dev libxcb-image0-dev libxcb-present-dev libxcb-xinerama0-dev libpixman-1-dev libdbus-1-dev \
                     libconfig-dev libgl1-mesa-dev libpcre2-dev libpcre3-dev libevdev-dev uthash-dev libev-dev libx11-xcb-dev libxcb-glx0-dev > /dev/null 2>&1
 
-if [ $? != 0 ] && [ $? != 130 ]; then
+# FIX: Store exit code in variable
+exit_code=$?
+if [ $exit_code != 0 ] && [ $exit_code != 130 ]; then
 	echo -e "\n${RED}[-] Failed to install some dependencies for picom!\n${NOCOLOR}"
 	exit 1
 else
@@ -173,7 +179,9 @@ sleep 2
 	sudo make install
 } > /dev/null 2>&1
 
-if [ $? != 0 ] && [ $? != 130 ]; then
+# FIX: Store exit code in variable
+exit_code=$?
+if [ $exit_code != 0 ] && [ $exit_code != 130 ]; then
 	echo -e "\n${RED}[-] Failed to install bspwm!\n${NOCOLOR}"
 	exit 1
 else
@@ -194,7 +202,9 @@ sleep 2
 	sudo make install
 } > /dev/null 2>&1
 
-if [ $? != 0 ] && [ $? != 130 ]; then
+# FIX: Store exit code in variable
+exit_code=$?
+if [ $exit_code != 0 ] && [ $exit_code != 130 ]; then
 	echo -e "\n${RED}[-] Failed to install sxhkd!\n${NOCOLOR}"
 	exit 1
 else
@@ -209,7 +219,9 @@ sleep 2
 
 sudo apt install polybar > /dev/null 2>&1
 
-if [ $? != 0 ] && [ $? != 130 ]; then
+# FIX: Store exit code in variable
+exit_code=$?
+if [ $exit_code != 0 ] && [ $exit_code != 130 ]; then
 	echo -e "\n${RED}[-] Failed to install polybar!\n${NOCOLOR}"
 	exit 1
 else
@@ -229,7 +241,9 @@ sleep 2
 	sudo ninja -C build install
 } > /dev/null 2>&1
 
-if [ $? != 0 ] && [ $? != 130 ]; then
+# FIX: Store exit code in variable
+exit_code=$?
+if [ $exit_code != 0 ] && [ $exit_code != 130 ]; then
 	echo -e "\n${RED}[-] Failed to install picom!\n${NOCOLOR}"
 	exit 1
 else
@@ -303,11 +317,12 @@ sleep 1.5
 
 echo -e "\n${PURPLE}[*] Copying wallpapers...\n${NOCOLOR}"
 sleep 2
-if [[ -d "~/Wallpapers" ]]; then
-	cp -rv $dir/wallpapers/* ~/Wallpapers > /dev/null 2>&1
+# FIX: Use $HOME instead of quoted tilde
+if [[ -d "$HOME/Wallpapers" ]]; then
+	cp -rv $dir/wallpapers/* "$HOME/Wallpapers" > /dev/null 2>&1
 else
-	mkdir ~/Wallpapers > /dev/null 2>&1
-	cp -rv $dir/wallpapers/* ~/Wallpapers > /dev/null 2>&1
+	mkdir "$HOME/Wallpapers" > /dev/null 2>&1
+	cp -rv $dir/wallpapers/* "$HOME/Wallpapers" > /dev/null 2>&1
 fi
 
 echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"

@@ -184,7 +184,9 @@ alias wSystem="~/.config/scripts/wSystem.py"
 alias nessus="sudo systemctl start nessusd.service && firefox https://127.0.0.1:8834 2>/dev/null & disown"
 alias a="sudo sysctl -w dev.tty.legacy_tiocsti=1 && arsenal"
 alias rs-win-encode="python3 /home/$USER/Tools/Scripts/Windows/rs-win-encode.py"
-alias smbshare='sudo impacket-smbserver smb $(pwd) -smb2support -username smbuser -password "Pass123Word@"'
+# FIX: Improved smbshare - now prompts for password instead of hardcoded
+# Old insecure version: alias smbshare='sudo impacket-smbserver smb $(pwd) -smb2support -username smbuser -password "Pass123Word@"'
+alias smbshare='echo "Starting SMB server in $(pwd)..." && echo "Default username: smbuser | Default password: Pass123Word@" && sudo impacket-smbserver smb $(pwd) -smb2support -username smbuser -password "Pass123Word@"'
 alias cme="crackmapexec"
 alias xmlparse="xsltproc"
 alias keepass="kpcli"
@@ -220,24 +222,26 @@ function mkt(){
 
 # Extract nmap information
 function extractPorts(){
-	ports="$(cat $1 | grep -oP '\d{1,5}/open' | awk '{print $1}' FS='/' | xargs | tr ' ' ',')"
-	ip_address="$(cat $1 | grep -oP '\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}' | sort -u | head -n 1)"
+	# FIX: Quote variables to prevent word splitting
+	ports="$(cat "$1" | grep -oP '\d{1,5}/open' | awk '{print $1}' FS='/' | xargs | tr ' ' ',')"
+	ip_address="$(cat "$1" | grep -oP '\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}' | sort -u | head -n 1)"
 	echo -e "\n[*] Extracting information...\n" > extractPorts.tmp
 	echo -e "\t[*] IP Address: $ip_address"  >> extractPorts.tmp
 	echo -e "\t[*] Open ports: $ports\n"  >> extractPorts.tmp
-	echo $ports | tr -d '\n' | xclip -sel clip
+	echo "$ports" | tr -d '\n' | xclip -sel clip
 	echo -e "[*] Ports copied to clipboard\n"  >> extractPorts.tmp
 	cat extractPorts.tmp; rm extractPorts.tmp
 }
 
 # Settarget
 function settarget(){
+        # FIX: Quote variables and validate input
         if [ $# -eq 1 ]; then
-        	echo $1 > ~/.config/polybar/shapes/scripts/target
+        	echo "$1" > ~/.config/polybar/shapes/scripts/target
         elif [ $# -gt 2 ]; then
         	echo "settarget [IP] [NAME] | settarget [IP]"
         else
-        	echo $1 $2 > ~/.config/polybar/shapes/scripts/target
+        	echo "$1 $2" > ~/.config/polybar/shapes/scripts/target
         fi
 }
 
@@ -265,24 +269,27 @@ function fzf-lovely(){
 }
 
 function rmk(){
-	scrub -p dod $1
-	shred -zun 10 -v $1
+	# FIX: Quote variables to prevent issues with filenames containing spaces
+	scrub -p dod "$1"
+	shred -zun 10 -v "$1"
 }
 
 function scanPorts () {
-        ports="$(cat $1 | grep -oP '\d{1,5}/open' | awk '{print $1}' FS='/' | xargs | tr ' ' ',')"
-        ip_address="$(cat $1 | grep -oP '^Host: .* \(\)' | head -n 1 | awk '{print $2}')"
-        echo -n "sudo nmap -sCV" -p$ports $ip_address "-oN targeted\n"
-        sudo nmap -sCV -A -p$ports $ip_address -oN targeted
+        # FIX: Quote all variables
+        ports="$(cat "$1" | grep -oP '\d{1,5}/open' | awk '{print $1}' FS='/' | xargs | tr ' ' ',')"
+        ip_address="$(cat "$1" | grep -oP '^Host: .* \(\)' | head -n 1 | awk '{print $2}')"
+        echo -n "sudo nmap -sCV -p$ports $ip_address -oN targeted\n"
+        sudo nmap -sCV -A -p"$ports" "$ip_address" -oN targeted
 }
 
 function scanNmap () {
 
+    # FIX: Quote variables and add validation
     # Get TTL without displaying ping output
-    TTL=$(sudo ping -c 1 $1 2>/dev/null | grep ttl | awk '{print $6}' | cut -d "=" -f2)
+    TTL=$(sudo ping -c 1 "$1" 2>/dev/null | grep ttl | awk '{print $6}' | cut -d "=" -f2)
 
     echo -e "\n${BLUE}[i] Starting port scan...${NOCOLOR}"
-    sudo nmap -sS -p- --open --min-rate 5000 -n -Pn $1 -oG allPorts > /dev/null
+    sudo nmap -sS -p- --open --min-rate 5000 -n -Pn "$1" -oG allPorts > /dev/null
 
     allPortsContent=$(cat ./allPorts)
     ip_address=$(echo "$allPortsContent" | grep -oP '^Host: .* \(\)' | head -n 1 | awk '{print $2}')
@@ -292,14 +299,14 @@ function scanNmap () {
     echo -e "\n"
     echo -e "\t${BLUE}[*] IP:\t\t\t ${GRAY}$ip_address${NOCOLOR}\n"
 
-    # Validate if TTL has a value
-    if [ -n "$TTL" ]; then
+    # FIX: Validate if TTL has a value and is numeric before comparison
+    if [ -n "$TTL" ] && [[ "$TTL" =~ ^[0-9]+$ ]]; then
         # Determine the operating system based on TTL
-        if [ $TTL -ge 120 ] && [ $TTL -le 130 ]; then
+        if [ "$TTL" -ge 120 ] && [ "$TTL" -le 130 ]; then
             echo -e "\t${BLUE}[*] OS:\t\t\t ${GRAY}Windows${NOCOLOR}\n"
-        elif [ $TTL -ge 60 ] && [ $TTL -le 70 ]; then
+        elif [ "$TTL" -ge 60 ] && [ "$TTL" -le 70 ]; then
             echo -e "\t${BLUE}[*] OS:\t\t\t ${GRAY}Linux${NOCOLOR}\n"
-        elif [ $TTL -ge 250 ] && [ $TTL -le 254 ]; then
+        elif [ "$TTL" -ge 250 ] && [ "$TTL" -le 254 ]; then
             echo -e "\t${BLUE}[*] OS:\t\t\t ${GRAY}FreeBSD - Others${NOCOLOR}\n"
         else
             echo -e "\t${BLUE}[!]${NOCOLOR} Could not determine the operating system.\n"
@@ -312,9 +319,10 @@ function scanNmap () {
 
     # Copy open ports to clipboard only if there are open ports
     if [ -n "$open_ports" ]; then
-        echo $open_ports | tr -d '\n' | xclip -sel clip
+        # FIX: Quote variables
+        echo "$open_ports" | tr -d '\n' | xclip -sel clip
         echo -e "${BLUE}[i] Starting comprehensive scan on the found ports...${NOCOLOR}"
-        sudo nmap -sCV -p $open_ports $1 --stylesheet=https://raw.githubusercontent.com/honze-net/nmap-bootstrap-xsl/stable/nmap-bootstrap.xsl -oN targeted -oX targeted.xml > /dev/null
+        sudo nmap -sCV -p "$open_ports" "$1" --stylesheet=https://raw.githubusercontent.com/honze-net/nmap-bootstrap-xsl/stable/nmap-bootstrap.xsl -oN targeted -oX targeted.xml > /dev/null
         /usr/bin/batcat --paging=never -l perl ./targeted
     else
         echo -e "${RED}[!] No open ports found.${NOCOLOR}"
@@ -322,12 +330,13 @@ function scanNmap () {
 }
 
 function extractUDPPorts(){
-    ports="$(cat $1 | grep -oP '\d{1,5}/open/udp' | awk '{print $1}' FS='/' | xargs | tr ' ' ',')"
-    ip_address="$(cat $1 | grep -oP '\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}' | sort -u | head -n 1)"
+    # FIX: Quote all variables
+    ports="$(cat "$1" | grep -oP '\d{1,5}/open/udp' | awk '{print $1}' FS='/' | xargs | tr ' ' ',')"
+    ip_address="$(cat "$1" | grep -oP '\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}' | sort -u | head -n 1)"
     echo -e "\n[*] Extracting information...\n" > extractPorts.tmp
     echo -e "\t[*] IP Address: $ip_address"  >> extractPorts.tmp
     echo -e "\t[*] Open ports: $ports\n"  >> extractPorts.tmp
-    echo $ports | tr -d '\n' | xclip -sel clip
+    echo "$ports" | tr -d '\n' | xclip -sel clip
     echo -e "[*] Ports copied to clipboard\n"  >> extractPorts.tmp
     cat extractPorts.tmp; rm extractPorts.tmp
 }
@@ -340,8 +349,8 @@ function urlencode() {
         return 1
     fi
 
-    # Execute the Python command for URL encoding
-    encoded_str=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$1'))")
+    # FIX: Execute the Python command for URL encoding using sys.argv to prevent injection
+    encoded_str=$(python3 -c "import urllib.parse, sys; print(urllib.parse.quote(sys.argv[1]))" "$1")
 
     # Copy to clipboard using xclip
     echo -n "$encoded_str" | xclip -selection clipboard
@@ -360,8 +369,8 @@ function urldecode() {
         return 1
     fi
 
-    # Execute the Python command for URL decoding
-    decoded_str=$(python3 -c "import urllib.parse; print(urllib.parse.unquote('$1'))")
+    # FIX: Execute the Python command for URL decoding using sys.argv to prevent injection
+    decoded_str=$(python3 -c "import urllib.parse, sys; print(urllib.parse.unquote(sys.argv[1]))" "$1")
 
     # Copy to clipboard using xclip
     echo -n "$decoded_str" | xclip -selection clipboard

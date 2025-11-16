@@ -1,0 +1,297 @@
+name: Tests
+
+# Run tests on push to main and on all pull requests
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+# Allow manual workflow dispatch
+  workflow_dispatch:
+
+jobs:
+  # Job 1: Run Bats tests
+  bats-tests:
+    name: Bats Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Bats
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bats
+
+      - name: Run unit tests
+        run: bats tests/test_setup.bats
+
+      - name: Run security tests
+        run: bats tests/test_security.bats
+
+      - name: Run integration tests
+        run: bats tests/test_integration.bats
+
+      - name: Generate test summary
+        if: always()
+        run: |
+          echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "✅ All Bats tests completed" >> $GITHUB_STEP_SUMMARY
+
+  # Job 2: Run ShellCheck
+  shellcheck:
+    name: ShellCheck Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install ShellCheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+
+      - name: Run ShellCheck on setup.sh
+        run: |
+          echo "Running ShellCheck on setup.sh..."
+          shellcheck -S warning setup.sh || true
+
+      - name: Run ShellCheck on all scripts
+        run: |
+          echo "Running ShellCheck on all bash scripts..."
+          find scripts -name "*.sh" -type f -exec shellcheck -S warning {} \; || true
+
+      - name: Generate ShellCheck summary
+        if: always()
+        run: |
+          echo "## ShellCheck Results" >> $GITHUB_STEP_SUMMARY
+          echo "Static analysis completed" >> $GITHUB_STEP_SUMMARY
+
+  # Job 3: Syntax validation
+  syntax-check:
+    name: Bash Syntax Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check setup.sh syntax
+        run: bash -n setup.sh
+
+      - name: Check all bash scripts syntax
+        run: |
+          find scripts -name "*.sh" -type f -exec bash -n {} \;
+
+      - name: Check zshrc syntax
+        run: |
+          # zsh syntax check (basic)
+          if command -v zsh &> /dev/null; then
+            zsh -n .zshrc || echo "zsh not available for full check"
+          fi
+
+  # Job 4: Python tests (for whichSystem.py)
+  python-tests:
+    name: Python Script Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Check whichSystem.py syntax
+        run: python3 -m py_compile scripts/whichSystem.py
+
+      - name: Run basic validation of whichSystem.py
+        run: |
+          cd scripts
+          python3 -c "
+          import whichSystem
+          # Test basic functionality
+          result = whichSystem.get_os('64')
+          assert result == 'Linux', f'Expected Linux, got {result}'
+          print('✅ whichSystem.py basic tests passed')
+          "
+
+  # Job 5: Version validation
+  version-check:
+    name: Version Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check LSD version URL
+        run: |
+          VERSION=$(grep 'LSD_VERSION=' setup.sh | cut -d'"' -f2)
+          URL="https://github.com/lsd-rs/lsd/releases/download/v${VERSION}/lsd_${VERSION}_amd64.deb"
+          echo "Checking LSD URL: $URL"
+          curl -L --head --fail "$URL" || (echo "❌ LSD download URL is broken" && exit 1)
+          echo "✅ LSD download URL is valid"
+
+      - name: Check Go version URL
+        run: |
+          VERSION=$(grep 'GO_VERSION=' setup.sh | cut -d'"' -f2)
+          URL="https://go.dev/dl/go${VERSION}.linux-amd64.tar.gz"
+          echo "Checking Go URL: $URL"
+          curl -L --head --fail "$URL" || (echo "❌ Go download URL is broken" && exit 1)
+          echo "✅ Go download URL is valid"
+
+      - name: Verify GitHub repositories exist
+        run: |
+          echo "Checking GitHub repositories..."
+
+          repos=(
+            "https://github.com/baskerville/bspwm"
+            "https://github.com/baskerville/sxhkd"
+            "https://github.com/ibhagwan/picom"
+            "https://github.com/ohmyzsh/ohmyzsh"
+            "https://github.com/romkatv/powerlevel10k"
+          )
+
+          for repo in "${repos[@]}"; do
+            echo "Checking $repo..."
+            curl -L --head --fail "$repo" > /dev/null || (echo "❌ $repo not accessible" && exit 1)
+          done
+
+          echo "✅ All GitHub repositories are accessible"
+
+  # Job 6: Repository structure validation
+  structure-check:
+    name: Repository Structure
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Verify required directories exist
+        run: |
+          dirs=(
+            "config"
+            "fonts"
+            "scripts"
+            "wallpapers"
+            "assets"
+            "tests"
+          )
+
+          for dir in "${dirs[@]}"; do
+            if [ ! -d "$dir" ]; then
+              echo "❌ Required directory missing: $dir"
+              exit 1
+            fi
+          done
+
+          echo "✅ All required directories exist"
+
+      - name: Verify required files exist
+        run: |
+          files=(
+            "setup.sh"
+            ".zshrc"
+            ".p10k.zsh"
+            "README.md"
+            "scripts/whichSystem.py"
+          )
+
+          for file in "${files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ Required file missing: $file"
+              exit 1
+            fi
+          done
+
+          echo "✅ All required files exist"
+
+      - name: Check file permissions
+        run: |
+          if [ ! -x "setup.sh" ]; then
+            echo "❌ setup.sh is not executable"
+            exit 1
+          fi
+
+          if [ ! -x "scripts/whichSystem.py" ]; then
+            echo "❌ whichSystem.py is not executable"
+            exit 1
+          fi
+
+          echo "✅ All required files have correct permissions"
+
+  # Job 7: Security audit
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check for hardcoded secrets
+        run: |
+          echo "Scanning for potential secrets..."
+
+          # Check for common secret patterns (excluding known safe ones)
+          ! grep -rE '(password|passwd|pwd)[[:space:]]*=[[:space:]]*["\x27][^$]' . --exclude-dir=.git --exclude-dir=tests --exclude="*.md" || (echo "⚠️ Potential hardcoded password found" && exit 1)
+
+          # Check for API keys
+          ! grep -riE 'api[_-]?key[[:space:]]*=' . --exclude-dir=.git --exclude-dir=tests --exclude="*.md" --exclude=".zshrc" || true
+
+          echo "✅ No obvious secrets found"
+
+      - name: Check for suspicious commands
+        run: |
+          echo "Checking for suspicious patterns..."
+
+          # Check for eval
+          ! grep -r "eval" setup.sh scripts/ --exclude-dir=.git || (echo "⚠️ eval usage found" && exit 1)
+
+          # Check for unquoted rm -rf
+          ! grep -E 'rm -rf \$[A-Z_]+[^"]' setup.sh || true
+
+          echo "✅ No suspicious commands found"
+
+  # Summary job
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [bats-tests, shellcheck, syntax-check, python-tests, version-check, structure-check, security-audit]
+    if: always()
+
+    steps:
+      - name: Generate final summary
+        run: |
+          echo "# 4ndy-bspwm Test Suite Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Test Suite | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|------------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Bats Tests | ${{ needs.bats-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| ShellCheck | ${{ needs.shellcheck.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Syntax Check | ${{ needs.syntax-check.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Python Tests | ${{ needs.python-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Version Check | ${{ needs.version-check.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Structure Check | ${{ needs.structure-check.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Security Audit | ${{ needs.security-audit.result }} |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Check overall status
+        run: |
+          if [ "${{ needs.bats-tests.result }}" == "success" ] && \
+             [ "${{ needs.syntax-check.result }}" == "success" ] && \
+             [ "${{ needs.python-tests.result }}" == "success" ] && \
+             [ "${{ needs.version-check.result }}" == "success" ] && \
+             [ "${{ needs.structure-check.result }}" == "success" ]; then
+            echo "✅ All critical tests passed!"
+            exit 0
+          else
+            echo "❌ Some tests failed"
+            exit 1
+          fi
