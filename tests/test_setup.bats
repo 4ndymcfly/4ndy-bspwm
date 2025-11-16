@@ -11,7 +11,7 @@ setup() {
     SETUP_FILE="./setup.sh"
 
     # Create temporary directory for tests
-    export TEST_TEMP_DIR="${BATS_TEST_TMPDIR}/bspwm-test-$$"
+    export TEST_TEMP_DIR="${BATS_TEST_TMPDIR:-/tmp}/bspwm-test-$$"
     mkdir -p "$TEST_TEMP_DIR"
 }
 

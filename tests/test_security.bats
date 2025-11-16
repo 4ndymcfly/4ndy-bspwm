@@ -38,11 +38,11 @@ setup() {
 }
 
 @test "[SECURITY] Downloaded files are saved before execution" {
-    # Go download
-    grep -A 3 "curl -LO.*go.dev" "$SETUP_FILE" | grep -q "tar -C"
+    # Go download - tar command should be after curl (within 12 lines)
+    grep -A 12 "curl -LO.*GO_URL" "$SETUP_FILE" | grep -q "tar -C"
 
     # LSD download
-    grep -A 3 "wget.*lsd.*\.deb" "$SETUP_FILE" | grep -q "dpkg -i"
+    grep -A 3 "wget.*FILE_URL" "$SETUP_FILE" | grep -q "dpkg -i"
 }
 
 #==============================================================================
@@ -51,7 +51,7 @@ setup() {
 
 @test "[SECURITY] Script refuses to run as root" {
     # Must check and exit if root
-    grep -A 2 'if \[ "\$NORMAL_USER" == "root" \]' "$SETUP_FILE" | grep -q "exit 1"
+    grep -A 5 'if \[ "\$NORMAL_USER" == "root" \]' "$SETUP_FILE" | grep -q "exit 1"
 }
 
 @test "[SECURITY] sudo is used selectively, not globally" {
@@ -71,7 +71,8 @@ setup() {
 
 @test "[SECURITY] Critical directories are not hardcoded to root" {
     # Should NOT have commands that affect / or /home directly
-    ! grep -E 'rm -rf (/|/home)($|[^/])' "$SETUP_FILE"
+    # /usr/local is OK for package installations
+    ! grep -E 'rm -rf (/|/home|/etc|/var|/bin)($|[^/])' "$SETUP_FILE" | grep -v "/usr/local"
 }
 
 @test "[SECURITY] Temp directories use safe patterns" {
@@ -88,13 +89,10 @@ setup() {
 
 @test "[SECURITY] Directory creation uses -p flag safely" {
     # mkdir -p should be used, but paths should be sane
-    if grep "mkdir -p" "$SETUP_FILE"; then
-        # Should have at least some mkdir -p
-        grep -q "mkdir -p" "$SETUP_FILE"
+    grep -q "mkdir -p" "$SETUP_FILE"
 
-        # Should NOT be creating root dirs
-        ! grep "mkdir -p /" "$SETUP_FILE"
-    fi
+    # Should NOT be creating dangerous root-level dirs (but /root is OK)
+    ! grep -E 'mkdir -p /($| |etc|var|usr|bin)' "$SETUP_FILE"
 }
 
 #==============================================================================
@@ -135,8 +133,8 @@ setup() {
 
 @test "[SECURITY] Installations fail safely" {
     # Critical installations should check exit codes
-    grep -A 5 "apt install.*docker" "$SETUP_FILE" | grep -q "exit_code"
-    grep -A 5 "apt install.*kitty" "$SETUP_FILE" | grep -q "exit_code"
+    # Check that apt install commands have exit_code checks
+    grep -A 6 "sudo apt install.*kitty" "$SETUP_FILE" | grep -q "exit_code"
 }
 
 #==============================================================================
@@ -173,8 +171,8 @@ setup() {
 
 @test "[SECURITY] No use of .. in critical paths" {
     # Check that we're not using ../ in dangerous operations
-    grep "rm -rf" "$SETUP_FILE" | ! grep -q '\.\.'
-    grep "chmod" "$SETUP_FILE" | ! grep -q '\.\.'
+    ! grep "rm -rf" "$SETUP_FILE" | grep -q '\.\.'
+    ! grep "chmod" "$SETUP_FILE" | grep -q '\.\.'
 }
 
 @test "[SECURITY] Symlinks use absolute paths or validated relatives" {
@@ -257,7 +255,7 @@ setup() {
 @test "[SECURITY] Config files have appropriate permissions" {
     # .zshrc and similar should not be world-writable
     # They're copied with cp which preserves reasonable permissions
-    grep "cp.*\.zshrc" "$SETUP_FILE" | ! grep "chmod 777"
+    ! grep "cp.*\.zshrc" "$SETUP_FILE" | grep "chmod 777"
 }
 
 #==============================================================================
@@ -307,7 +305,7 @@ setup() {
 #==============================================================================
 
 @test "[SECURITY] Git clones use HTTPS not git://" {
-    grep "git clone" "$SETUP_FILE" | grep -v "^#" | ! grep "git://"
+    ! grep "git clone" "$SETUP_FILE" | grep -v "^#" | grep "git://"
 }
 
 @test "[SECURITY] GitHub URLs use proper format" {

@@ -55,6 +55,9 @@ else
 
 	echo -e "\n\n${BLUE}[*] Installing necessary packages for the environment, wait...\n${NOCOLOR}"
 
+    # Update package lists
+    sudo apt update > /dev/null 2>&1
+
     # FIX: Add missing dependencies for zsh plugins and net-tools
     sudo apt install -y zsh-syntax-highlighting zsh-autosuggestions net-tools kitty rofi feh xclip ranger i3lock-fancy scrot scrub \
                         wmname imagemagick cmatrix htop python3-pip procps tty-clock fzf bat pamixer flameshot pipx openjdk-21-jdk \

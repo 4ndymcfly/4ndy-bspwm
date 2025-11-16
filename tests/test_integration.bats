@@ -10,7 +10,7 @@
 
 setup() {
     SETUP_FILE="./setup.sh"
-    export TEST_HOME="${BATS_TEST_TMPDIR}/fake-home"
+    export TEST_HOME="${BATS_TEST_TMPDIR:-/tmp}/fake-home"
     mkdir -p "$TEST_HOME"
 }
 
