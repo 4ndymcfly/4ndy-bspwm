@@ -65,7 +65,7 @@ done
 cd "$(dirname "$0")/.." || exit 1
 
 echo -e "${BLUE}╔══════════════════════════════════════════════════════════╗${NOCOLOR}"
-echo -e "${BLUE}║        4ndy-bspwm Test Suite Runner                     ║${NOCOLOR}"
+echo -e "${BLUE}║        4ndy-bspwm Test Suite Runner                      ║${NOCOLOR}"
 echo -e "${BLUE}╚══════════════════════════════════════════════════════════╝${NOCOLOR}"
 echo ""
 
