@@ -390,7 +390,7 @@ sleep 2
 
 {
 	rm -rfv ~/tools
-	rm -rfv "${dir}"
+	rm -rfv "$dir"
 } > /dev/null 2>&1
 
 echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"

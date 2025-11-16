@@ -183,7 +183,7 @@ teardown() {
 }
 
 @test "Removes cloned repository after installation" {
-    grep -q 'rm -rfv \$dir' "$SETUP_FILE"
+    grep -q 'rm -rfv "\$dir"' "$SETUP_FILE"
 }
 
 #==============================================================================
