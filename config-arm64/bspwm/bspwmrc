@@ -1,0 +1,92 @@
+#!/bin/sh
+
+pgrep -x sxhkd > /dev/null || sxhkd &
+wmname LG3D &
+
+# Auto-detect hypervisor and load appropriate tools
+HYPERVISOR=$(systemd-detect-virt 2>/dev/null || echo "none")
+case "$HYPERVISOR" in
+    vmware)
+        vmware-user-suid-wrapper &
+        ;;
+    parallels)
+        # Start Parallels Control Center for dynamic resolution and multi-monitor
+        pgrep -x prlcc > /dev/null || prlcc &
+
+        # Wait for both monitors to be connected (max 10 seconds)
+        for i in $(seq 1 20); do
+            MONITOR_COUNT=$(xrandr --query | grep " connected" | wc -l)
+            [ "$MONITOR_COUNT" -ge 2 ] && break
+            sleep 0.5
+        done
+
+        # Configure dual monitor: Virtual-2 left, Virtual-1 right (primary)
+        xrandr --output Virtual-2 --mode 2560x1440 --pos 0x0 \
+               --output Virtual-1 --mode 2560x1440 --pos 2560x0 --primary 2>/dev/null
+        sleep 1
+        ;;
+    oracle)
+        VBoxClient-all &
+        ;;
+esac
+
+# Multi-monitor configuration
+# Detect connected monitors and distribute desktops
+MONITORS=$(xrandr --query | grep " connected" | cut -d" " -f1)
+MONITOR_COUNT=$(echo "$MONITORS" | wc -l)
+
+if [ "$MONITOR_COUNT" -eq 2 ]; then
+    # Two monitors: Primary (right) gets 1-5, Secondary (left) gets 6-10
+    # Virtual-1 = primary (right), Virtual-2 = secondary (left)
+    bspc monitor Virtual-1 -d I II III IV V
+    bspc monitor Virtual-2 -d VI VII VIII IX X
+elif [ "$MONITOR_COUNT" -eq 1 ]; then
+    # Single monitor: all 10 desktops
+    MONITOR1=$(echo "$MONITORS" | sed -n '1p')
+    bspc monitor "$MONITOR1" -d I II III IV V VI VII VIII IX X
+else
+    # Fallback: use first monitor
+    bspc monitor -d I II III IV V VI VII VIII IX X
+fi
+
+bspc config border_width 0
+bspc config window_gap 10
+bspc config split_ratio 0.50
+bspc config borderless_monocle true
+bspc config gapless_monocle true
+bspc config paddingless_monocle true
+bspc config focus_follows_pointer true
+bspc config pointer_modifier mod1
+bspc config pointer_action1 move
+#bspc config pointer_action2 resize_side
+bspc config pointer_action2 resize_corner
+bspc config normal_border_color '#1f1f1f'
+bspc config focused_border_color '#30302f'
+bspc config presel_feedback_color '#512da8'
+
+bspc rule -a Gimp desktop='^8' state=floating follow=on
+bspc rule -a Chromium desktop='^3'
+bspc rule -a mplayer2 state=floating
+bspc rule -a Kupfer.py focus=on
+bspc rule -a Screenkey manage=off
+bspc rule -a burp-StartBurp: state=floating center=true desktop='^9' follow=on
+bspc rule -a Wireshark: state=floating desktop='^8' follow=on
+bspc rule -a Thunar: state=pseudo tiled
+bspc rule -a VirtualBox: state=floating center=true
+bspc rule -a Google-chrome: state=tiled center=true follow=on desktop='^4'
+bspc rule -a firefox-esr: state=tiled center=true follow=on desktop='^3'
+bspc rule -a ghidra-Ghidra: state=floating center=true follow=on
+
+# Wait for display to be fully ready before launching visual components
+sleep 2
+
+# Wallpaper: same image filled on each monitor independently
+feh --bg-fill ~/Wallpapers/kevin.jpg ~/Wallpapers/kevin.jpg &
+
+# Launch polybar after a small delay to ensure monitors are configured
+sleep 0.5
+~/.config/polybar/./launch.sh --shapes &
+
+picom --config ~/.config/picom/picom.conf &
+# wal -R
+xsetroot -cursor_name left_ptr

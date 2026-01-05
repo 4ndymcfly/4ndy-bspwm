@@ -19,6 +19,24 @@ dir=$(pwd)
 fdir="$HOME/.local/share/fonts"
 NORMAL_USER=$(getent passwd 1000 | cut -d: -f1)
 
+# Architecture and hypervisor detection
+ARCH=$(uname -m)
+IS_ARM64=false
+IS_VM=false
+HYPERVISOR="none"
+
+if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
+    IS_ARM64=true
+fi
+
+# Detect hypervisor (Parallels, VMware, VirtualBox, etc.)
+if command -v systemd-detect-virt &> /dev/null; then
+    HYPERVISOR=$(systemd-detect-virt 2>/dev/null || echo "none")
+    if [ "$HYPERVISOR" != "none" ]; then
+        IS_VM=true
+    fi
+fi
+
 trap ctrl_c INT
 
 function ctrl_c(){
@@ -49,6 +67,43 @@ else
     clear
 	banner
 	echo -e "\n[+] Forked from ${PURPLE}@r1vs3c${NOCOLOR}\n[+] https://github.com/r1vs3c/auto-bspwm/\n"
+
+	# Show architecture and VM detection
+	if [ "$IS_ARM64" = true ]; then
+	    echo -e "${YELLOW}[*] Detected ARM64 architecture ($ARCH)${NOCOLOR}"
+	else
+	    echo -e "${BLUE}[*] Detected x86_64 architecture ($ARCH)${NOCOLOR}"
+	fi
+
+	if [ "$IS_VM" = true ]; then
+	    echo -e "${YELLOW}[*] Running in virtual machine: $HYPERVISOR${NOCOLOR}"
+	fi
+
+	# ARM64/VM Warning about optimized configs
+	if [ "$IS_ARM64" = true ] || [ "$IS_VM" = true ]; then
+	    echo ""
+	    echo -e "${YELLOW}╔════════════════════════════════════════════════════════════════════╗${NOCOLOR}"
+	    echo -e "${YELLOW}║                    ARM64/VM CONFIGURATION NOTICE                   ║${NOCOLOR}"
+	    echo -e "${YELLOW}╠════════════════════════════════════════════════════════════════════╣${NOCOLOR}"
+	    echo -e "${YELLOW}║${NOCOLOR} The ARM64 configuration files are optimized for:                   ${YELLOW}║${NOCOLOR}"
+	    echo -e "${YELLOW}║${NOCOLOR}   • macOS Sequoia (v26) host                                       ${YELLOW}║${NOCOLOR}"
+	    echo -e "${YELLOW}║${NOCOLOR}   • Parallels Desktop virtualization                               ${YELLOW}║${NOCOLOR}"
+	    echo -e "${YELLOW}║${NOCOLOR}   • Dual 4K monitor setup (2560x1440 each)                         ${YELLOW}║${NOCOLOR}"
+	    echo -e "${YELLOW}║${NOCOLOR}                                                                    ${YELLOW}║${NOCOLOR}"
+	    echo -e "${YELLOW}║${NOCOLOR} ${PURPLE}Keyboard shortcuts have been modified:${NOCOLOR}                            ${YELLOW}║${NOCOLOR}"
+	    echo -e "${YELLOW}║${NOCOLOR}   • Alt + F1-F10 to switch desktops (macOS intercepts Super+num)   ${YELLOW}║${NOCOLOR}"
+	    echo -e "${YELLOW}║${NOCOLOR}   • Alt + Shift + F1-F10 to move windows between desktops          ${YELLOW}║${NOCOLOR}"
+	    echo -e "${YELLOW}║${NOCOLOR}   • See SHORTCUTS.md for complete reference                        ${YELLOW}║${NOCOLOR}"
+	    echo -e "${YELLOW}║${NOCOLOR}                                                                    ${YELLOW}║${NOCOLOR}"
+	    echo -e "${YELLOW}║${NOCOLOR} ${RED}If using an Apple keyboard:${NOCOLOR}                                      ${YELLOW}║${NOCOLOR}"
+	    echo -e "${YELLOW}║${NOCOLOR}   The Super key (leader) maps differently. You may need to         ${YELLOW}║${NOCOLOR}"
+	    echo -e "${YELLOW}║${NOCOLOR}   modify sxhkdrc to swap Super <-> Alt for your keyboard layout.   ${YELLOW}║${NOCOLOR}"
+	    echo -e "${YELLOW}║${NOCOLOR}   Standard x86 config uses Super as leader key.                    ${YELLOW}║${NOCOLOR}"
+	    echo -e "${YELLOW}╚════════════════════════════════════════════════════════════════════╝${NOCOLOR}"
+	    echo ""
+	    sleep 3
+	fi
+	echo ""
 	sleep 1
 
 	sudo -v
@@ -72,9 +127,13 @@ else
         sleep 1.5
     fi
 
-	# FIX: Update to latest version of LSD
+	# FIX: Update to latest version of LSD (with ARM64 support)
 	LSD_VERSION="1.2.0"
-	FILE_URL="https://github.com/lsd-rs/lsd/releases/download/v${LSD_VERSION}/lsd_${LSD_VERSION}_amd64.deb"
+	if [ "$IS_ARM64" = true ]; then
+	    FILE_URL="https://github.com/lsd-rs/lsd/releases/download/v${LSD_VERSION}/lsd_${LSD_VERSION}_arm64.deb"
+	else
+	    FILE_URL="https://github.com/lsd-rs/lsd/releases/download/v${LSD_VERSION}/lsd_${LSD_VERSION}_amd64.deb"
+	fi
 	FILE_NAME="lsd.deb"
 	wget "$FILE_URL" -O "$FILE_NAME" > /dev/null 2>&1
 	sudo dpkg -i "$FILE_NAME" > /dev/null 2>&1
@@ -85,9 +144,13 @@ else
 	sleep 1.5
 	rm -f "$FILE_NAME" > /dev/null 2>&1
 
-    # FIX: Update to latest version of Go
+    # FIX: Update to latest version of Go (with ARM64 support)
     GO_VERSION="1.23.5"
-    GO_TAR="go${GO_VERSION}.linux-amd64.tar.gz"
+    if [ "$IS_ARM64" = true ]; then
+        GO_TAR="go${GO_VERSION}.linux-arm64.tar.gz"
+    else
+        GO_TAR="go${GO_VERSION}.linux-amd64.tar.gz"
+    fi
     GO_URL="https://go.dev/dl/${GO_TAR}"
 
     curl -LO $GO_URL > /dev/null 2>&1
@@ -231,21 +294,35 @@ fi
 echo -e "\n${PURPLE}[*] Installing picom...\n${NOCOLOR}"
 sleep 2
 
-{
-	git clone https://github.com/ibhagwan/picom.git
-	cd picom
-	git submodule update --init --recursive
-	meson --buildtype=release . build
-	ninja -C build
-	sudo ninja -C build install
-} > /dev/null 2>&1
-exit_code=$?
-if [ $exit_code != 0 ] && [ $exit_code != 130 ]; then
-	echo -e "\n${RED}[-] Failed to install picom!\n${NOCOLOR}"
-	exit 1
+# ARM64/VM: Use apt install for better compatibility (avoids compilation issues with virgl)
+if [ "$IS_ARM64" = true ] || [ "$IS_VM" = true ]; then
+    sudo apt install -y picom > /dev/null 2>&1
+    exit_code=$?
+    if [ $exit_code != 0 ] && [ $exit_code != 130 ]; then
+        echo -e "\n${RED}[-] Failed to install picom!\n${NOCOLOR}"
+        exit 1
+    else
+        echo -e "\n${GREEN}[+] Done (installed via apt for VM/ARM64 compatibility)\n${NOCOLOR}"
+        sleep 1.5
+    fi
 else
-	echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
-	sleep 1.5
+    # x86_64 native: compile from source for latest features
+    {
+        git clone https://github.com/ibhagwan/picom.git
+        cd picom
+        git submodule update --init --recursive
+        meson --buildtype=release . build
+        ninja -C build
+        sudo ninja -C build install
+    } > /dev/null 2>&1
+    exit_code=$?
+    if [ $exit_code != 0 ] && [ $exit_code != 130 ]; then
+        echo -e "\n${RED}[-] Failed to install picom!\n${NOCOLOR}"
+        exit 1
+    else
+        echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
+        sleep 1.5
+    fi
 fi
 
 cd ..
@@ -327,7 +404,18 @@ sleep 1
 
 echo -e "\n${PURPLE}[*] Configuring configuration files...\n${NOCOLOR}"
 sleep 1.5
+
+# First copy base config
 cp -rv $dir/config/* ~/.config/ > /dev/null 2>&1
+
+# ARM64/VM: Override with ARM64-specific configs
+if [ "$IS_ARM64" = true ] || [ "$IS_VM" = true ]; then
+    if [ -d "$dir/config-arm64" ]; then
+        echo -e "${YELLOW}[*] Applying ARM64/VM-specific configurations...${NOCOLOR}"
+        cp -rv $dir/config-arm64/* ~/.config/ > /dev/null 2>&1
+    fi
+fi
+
 echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
 sleep 1.5
 
@@ -374,6 +462,22 @@ sleep 2
 	cd ..
 } > /dev/null 2>&1
 
+# ARM64/VM: Create bspwm.desktop for LightDM session selection
+if [ "$IS_ARM64" = true ] || [ "$IS_VM" = true ]; then
+    if [ ! -f /usr/share/xsessions/bspwm.desktop ]; then
+        echo -e "${YELLOW}[*] Creating bspwm.desktop for session selection...${NOCOLOR}"
+        sudo tee /usr/share/xsessions/bspwm.desktop > /dev/null << 'EOF'
+[Desktop Entry]
+Name=bspwm
+Comment=Binary Space Partitioning Window Manager
+Exec=bspwm
+TryExec=bspwm
+Type=Application
+Keywords=wm;tiling
+EOF
+    fi
+fi
+
 echo -e "\n${GREEN}[+] Done\n${NOCOLOR}"
 sleep 1.5
 
@@ -401,6 +505,16 @@ sleep 1.5
 
 echo -e "\n${GREEN}[+] Environment configured :D\n${NOCOLOR}"
 sleep 1.5
+
+# ARM64/Parallels: Show additional configuration tips
+if [ "$IS_ARM64" = true ] && [ "$HYPERVISOR" = "parallels" ]; then
+    echo -e "\n${YELLOW}[!] ARM64/Parallels detected - Additional tips:${NOCOLOR}"
+    echo -e "    ${GRAY}• If shutdown doesn't work, add 'acpi=force' to GRUB_CMDLINE_LINUX in /etc/default/grub${NOCOLOR}"
+    echo -e "    ${GRAY}• Then run: sudo update-grub${NOCOLOR}"
+    echo -e "    ${GRAY}• Keyboard shortcuts optimized for macOS host (see SHORTCUTS.md)${NOCOLOR}"
+    echo -e "    ${GRAY}• picom uses xrender backend for VM compatibility${NOCOLOR}\n"
+    sleep 2
+fi
 
 while true; do
 	echo -en "\n${YELLOW}[?] It's necessary to restart the system. Do you want to restart the system now? ([Y]/n) ${NOCOLOR}"

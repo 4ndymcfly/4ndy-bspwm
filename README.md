@@ -341,6 +341,7 @@ For detailed testing documentation, see [tests/README.md](tests/README.md)
 
 ## 📚 Documentation
 
+- **[Keyboard Shortcuts](SHORTCUTS.md)** - Complete keyboard shortcuts reference (Spanish)
 - **[Quick Start Guide](tests/QUICKSTART.md)** - Get testing in 5 minutes
 - **[Full Test Documentation](tests/README.md)** - Comprehensive testing guide
 - **[Test Summary](tests/TESTS_SUMMARY.md)** - Detailed test overview
