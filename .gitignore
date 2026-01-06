@@ -21,6 +21,11 @@ package-lock.json
 !.vscode/settings.json
 !.vscode/extensions.json
 
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
 # Misc
 _sass/dist
 assets/js/dist
