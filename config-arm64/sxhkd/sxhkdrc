@@ -96,6 +96,10 @@ super + {o,i}
 super + {_,shift + }{1-9,0}
 	bspc {desktop -f,node -d} '^{1-9,10}'
 
+# Control + number = change desktop, Control + Shift + number = move window (Apple Magic Keyboard)
+ctrl + {_,shift + }{1-9,0}
+	bspc {desktop -f,node -d} '^{1-9,10}'
+
 # Alternative with Alt + F-keys (for Mac/Parallels compatibility)
 # Alt + F1-F10 = change desktop, Alt + Shift + F1-F10 = move window
 alt + {_,shift + }{F1,F2,F3,F4,F5,F6,F7,F8,F9,F10}
